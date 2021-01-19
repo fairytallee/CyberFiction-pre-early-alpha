@@ -213,7 +213,7 @@ def main():
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:
-                        hero.Shoot(entity_group, event.pos)
+                        hero.shoot(entity_group, pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])
 
             screen.fill('black')
 
@@ -225,7 +225,7 @@ def main():
                 screen.blit(e.image, camera.apply(e))
             for bul in entity_group:
                 if isinstance(bul, Bullet):
-                    bul.update_bullet()
+                    bul.update_bullet(tiles_group)
             hits = sprite.spritecollide(hero, enemy_group, True)
             if hits:
                 process = False
