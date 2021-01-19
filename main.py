@@ -74,7 +74,7 @@ class Tile(Sprite):
 
 
 def generate_level(level):
-    new_player, new_enemy, x, y = None, None, None, None
+    new_player, enemy_group, x, y = None, SpriteGroup(), None, None
     for y in range(len(level)):
         for x in range(len(level[y])):
             if level[y][x] == '.':
@@ -91,7 +91,7 @@ def generate_level(level):
                 enemy_group.add(new_enemy)
 
     # вернем игрока, а также размер поля в клетках
-    return new_player, new_enemy, x, y
+    return new_player, enemy_group, x, y
 
 
 class Camera(object):
@@ -136,13 +136,13 @@ tiles_group = SpriteGroup()
 all_sprites = SpriteGroup()
 entity_group = SpriteGroup()
 bullet_group = SpriteGroup()
-enemy_group = SpriteGroup()
 
 level_map = load_level('map.map')
 
-hero, enemy, max_x, max_y = generate_level(level_map)
+hero, enemy_group, max_x, max_y = generate_level(level_map)
 entity_group.add(hero)
-entity_group.add(enemy)
+for spr in enemy_group:
+    entity_group.add(spr)
 
 total_level_width = (max_x + 1) * PLATFORM_WIDTH  # Высчитываем фактическую ширину уровня
 total_level_height = (max_y + 1) * PLATFORM_HEIGHT  # высоту
@@ -213,7 +213,7 @@ def main():
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:
-                        hero.shoot(entity_group, event.pos)
+                        hero.Shoot(entity_group, event.pos)
 
             screen.fill('black')
 
@@ -231,7 +231,8 @@ def main():
                 process = False
 
             hero.update(left, right, up, tiles_group)
-            enemy.update(tiles_group)
+            for e in enemy_group:
+                e.update(tiles_group)
 
         elif state == pause:
             for event in pygame.event.get():  # Обрабатываем события
