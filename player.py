@@ -18,9 +18,6 @@ BULLET_SPEED = 20
 
 COLOR = "white"
 
-sprites = pygame.sprite.Group()
-bullets = pygame.sprite.Group()
-
 
 class Bullet(sprite.Sprite):
     def __init__(self, x, y, speedx, speedy):
@@ -161,11 +158,10 @@ class Player(sprite.Sprite):
                     self.rect.top = p.rect.bottom  # то не движется вверх
                     self.yvel = 0  # и энергия прыжка пропадает
 
-    def shoot(self, entity_group, pos_mouse_x, pos_mouse_y):
+    def shoot(self, bullets_group, pos_mouse_x, pos_mouse_y):
 
         speed_x, speed_y = find_speed(pos_mouse_x, pos_mouse_y)
 
         bullet = Bullet(self.rect.centerx - (BULLET_SIZE // 2),
                         self.rect.centery - (BULLET_SIZE // 2), speed_x, speed_y)
-        entity_group.add(bullet)
-        bullets.add(bullet)
+        bullets_group.add(bullet)

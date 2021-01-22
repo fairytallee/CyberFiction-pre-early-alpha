@@ -128,8 +128,7 @@ PLATFORM_COLOR = "black"
 BACKGROUND_COLOR = "white"
 
 tile_images = {
-    'wall': load_image('wall.png'),
-    'empty': load_image('grass.png')
+    'wall': load_image('wall.png')
 }
 
 tiles_group = SpriteGroup()
@@ -213,7 +212,7 @@ def main():
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:
-                        hero.shoot(entity_group, pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])
+                        hero.shoot(bullet_group, pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])
 
             screen.fill('black')
 
@@ -223,9 +222,8 @@ def main():
                 screen.blit(spr.image, camera.apply(spr))
             for e in entity_group:
                 screen.blit(e.image, camera.apply(e))
-            for bul in entity_group:
-                if isinstance(bul, Bullet):
-                    bul.update_bullet(tiles_group)
+            for bul in bullet_group:
+                bul.update_bullet(tiles_group)
             hits = sprite.spritecollide(hero, enemy_group, True)
             if hits:
                 process = False
