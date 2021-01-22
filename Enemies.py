@@ -2,8 +2,10 @@ import pygame
 from pygame import *
 from Entities import Bullet
 import math
+import time
 
-WIN_WIDTH, WIN_HEIGHT = 1920, 1080
+# WIN_WIDTH, WIN_HEIGHT = 1920, 1080
+WIN_WIDTH, WIN_HEIGHT = 700, 700
 
 JUMP_POWER = 10
 GRAVITY = 0.35  # Сила, которая будет тянуть нас вниз
@@ -23,10 +25,10 @@ class EnemyBullet(Bullet):
         super().__init__(x, y, speedx, speedy)
 
 
-def find_enemy_speed(pos_mouse_x, pos_mouse_y):
+def find_enemy_speed(pos_mouse_x, pos_mouse_y, self_pos_x, self_pos_y):
 
-    x = WIN_WIDTH // 2
-    y = WIN_HEIGHT // 2 + 20
+    x = self_pos_x
+    y = self_pos_y
 
     angel = math.radians(abs(math.degrees(math.atan2(abs(pos_mouse_x - x), abs(y - pos_mouse_y))) - 90))
 
@@ -71,7 +73,7 @@ def find_enemy_speed(pos_mouse_x, pos_mouse_y):
 
 
 class Enemy(sprite.Sprite):
-    def __init__(self, x, y, bullet_group):
+    def __init__(self, x, y, bullet_group, all_sprites, hero):
         sprite.Sprite.__init__(self)
 
         self.onGround = False  # На земле ли я?
@@ -88,14 +90,23 @@ class Enemy(sprite.Sprite):
         self.pos = (self.rect.x, self.rect.y)
 
         self.bullets_group = bullet_group
+        self.all_sprites = all_sprites
 
-        self.bullet_speed = 20
+        self.hero = hero
+
+        self.bullet_speed = 1
+
+        self.shoot_pass = True
+
+        self.start_timer = 0
 
         self.left = False
         self.right = False
         self.up = False
 
     def update(self, platforms):
+
+        self.II(self.hero.rect.centerx, self.hero.rect.centery, platforms, self.hero)
 
         if self.left:
             self.xvel = -ENEMY_MOVE_SPEED  # Лево = x- n
@@ -140,14 +151,17 @@ class Enemy(sprite.Sprite):
                     self.yvel = 0  # и энергия прыжка пропадает
 
     def II(self, hero_pos_x, hero_pos_y, platforms, hero):
-        r = 200
+        r = 500
         if (hero.rect.centerx - self.rect.centerx) ** 2 + (hero.rect.centery - self.rect.centery) ** 2 <= r * r:
-            self.shoot(self.bullets_group, hero_pos_x, hero_pos_y)
+            if pygame.time.get_ticks() - self.start_timer > 18:
+                self.shoot(self.bullets_group, self.all_sprites, hero_pos_x, hero_pos_y)
+            self.start_timer = pygame.time.get_ticks()
 
-    def shoot(self, bullets_group, pos_mouse_x, pos_mouse_y):
+    def shoot(self, bullets_group, all_sprites, pos_mouse_x, pos_mouse_y):
 
-        speed_x, speed_y = find_enemy_speed(pos_mouse_x, pos_mouse_y)
+        speed_x, speed_y = find_enemy_speed(pos_mouse_x, pos_mouse_y, self.rect.centerx, self.rect.centery)
 
         bullet = EnemyBullet(self.rect.centerx - (BULLET_SIZE // 2),
                         self.rect.centery - (BULLET_SIZE // 2), speed_x, speed_y)
         bullets_group.add(bullet)
+        all_sprites.add(bullet)

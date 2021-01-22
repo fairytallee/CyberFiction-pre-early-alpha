@@ -7,8 +7,8 @@ from Entities import Player
 from Entities import Bullet
 from Enemies import Enemy
 
-
-WIN_WIDTH, WIN_HEIGHT = 1920, 1080
+WIN_WIDTH, WIN_HEIGHT = 700, 700
+# WIN_WIDTH, WIN_HEIGHT = 1920, 1080
 size = (WIN_WIDTH, WIN_HEIGHT)  # Группируем ширину и высоту в одну переменную
 
 pygame.init()  # Инициация PyGame, обязательная строчка
@@ -47,7 +47,7 @@ def load_level(filename):
 class ScreenFrame(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.rect = (0, 0, 1920, 1080)
+        self.rect = (0, 0, WIN_WIDTH, WIN_HEIGHT)
 
 
 class SpriteGroup(pygame.sprite.Group):
@@ -76,7 +76,7 @@ class Tile(Sprite):
 tiles_group = SpriteGroup()
 all_sprites = SpriteGroup()
 entity_group = SpriteGroup()
-bullet_group = SpriteGroup()
+bullets_group = SpriteGroup()
 
 
 def generate_level(level):
@@ -93,8 +93,11 @@ def generate_level(level):
                 ll[x] = '.'
                 level[y] = ll
             elif level[y][x] == 'e':
-                new_enemy = Enemy(PLATFORM_WIDTH * (x - 1), PLATFORM_HEIGHT * y, bullet_group)
+                new_enemy = Enemy(PLATFORM_WIDTH * (x - 1), PLATFORM_HEIGHT * y, bullets_group, all_sprites, None)
                 enemy_group.add(new_enemy)
+
+    for en in enemy_group:
+        en.hero = new_player
 
     # вернем игрока, а также размер поля в клетках
     return new_player, enemy_group, x, y
@@ -140,7 +143,7 @@ tile_images = {
 tiles_group = SpriteGroup()
 all_sprites = SpriteGroup()
 entity_group = SpriteGroup()
-bullet_group = SpriteGroup()
+bullets_group = SpriteGroup()
 
 level_map = load_level('map.map')
 
@@ -218,7 +221,7 @@ def main():
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:
-                        hero.shoot(bullet_group, pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])
+                        hero.shoot(bullets_group, all_sprites, pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])
 
             screen.fill('black')
 
@@ -228,15 +231,20 @@ def main():
                 screen.blit(spr.image, camera.apply(spr))
             for e in entity_group:
                 screen.blit(e.image, camera.apply(e))
-            for bul in bullet_group:
-                bul.update_bullet(tiles_group)
-            hits = sprite.spritecollide(hero, enemy_group, True)
+            for bul in bullets_group:
+                screen.blit(bul.image, camera.apply(bul))
+                if isinstance(bul, Bullet):
+                    bul.update_bullet(tiles_group)
+            hits = sprite.spritecollide(hero, enemy_group, False)
             if hits:
-                process = False
+                pass
+                # process = False
 
             hero.update(left, right, up, tiles_group)
             for e in enemy_group:
                 e.update(tiles_group)
+
+            print(len(all_sprites))
 
         elif state == pause:
             for event in pygame.event.get():  # Обрабатываем события
