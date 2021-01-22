@@ -73,6 +73,12 @@ class Tile(Sprite):
         self.abs_pos = (self.rect.x, self.rect.y)
 
 
+tiles_group = SpriteGroup()
+all_sprites = SpriteGroup()
+entity_group = SpriteGroup()
+bullet_group = SpriteGroup()
+
+
 def generate_level(level):
     new_player, enemy_group, x, y = None, SpriteGroup(), None, None
     for y in range(len(level)):
@@ -87,7 +93,7 @@ def generate_level(level):
                 ll[x] = '.'
                 level[y] = ll
             elif level[y][x] == 'e':
-                new_enemy = Enemy(PLATFORM_WIDTH * (x - 1), PLATFORM_HEIGHT * y)
+                new_enemy = Enemy(PLATFORM_WIDTH * (x - 1), PLATFORM_HEIGHT * y, bullet_group)
                 enemy_group.add(new_enemy)
 
     # вернем игрока, а также размер поля в клетках

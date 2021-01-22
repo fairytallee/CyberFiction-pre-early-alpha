@@ -1,5 +1,6 @@
 import pygame
 from pygame import *
+from Entities import Bullet
 import math
 
 WIN_WIDTH, WIN_HEIGHT = 1920, 1080
@@ -16,7 +17,13 @@ COLOR = 'red'
 BULLET_SIZE = 10
 BULLET_SPEED = 20
 
-def find_speed(pos_mouse_x, pos_mouse_y):
+
+class EnemyBullet(Bullet):
+    def __init__(self, x, y, speedx, speedy):
+        super().__init__(x, y, speedx, speedy)
+
+
+def find_enemy_speed(pos_mouse_x, pos_mouse_y):
 
     x = WIN_WIDTH // 2
     y = WIN_HEIGHT // 2 + 20
@@ -64,7 +71,7 @@ def find_speed(pos_mouse_x, pos_mouse_y):
 
 
 class Enemy(sprite.Sprite):
-    def __init__(self, x, y):
+    def __init__(self, x, y, bullet_group):
         sprite.Sprite.__init__(self)
 
         self.onGround = False  # На земле ли я?
@@ -80,19 +87,26 @@ class Enemy(sprite.Sprite):
         self.rect = Rect(x, y, ENEMY_WIDTH, ENEMY_HEIGHT)
         self.pos = (self.rect.x, self.rect.y)
 
+        self.bullets_group = bullet_group
+
         self.bullet_speed = 20
 
-    def update(self, left, right, up, platforms):
-        if left:
+        self.left = False
+        self.right = False
+        self.up = False
+
+    def update(self, platforms):
+
+        if self.left:
             self.xvel = -ENEMY_MOVE_SPEED  # Лево = x- n
 
-        if right:
+        if self.right:
             self.xvel = ENEMY_MOVE_SPEED  # Право = x + n
 
-        if not (left or right):  # стоим, когда нет указаний идти
+        if not (self.left or self.right):  # стоим, когда нет указаний идти
             self.xvel = 0
 
-        if up:
+        if self.up:
             if self.onGround:  # прыгаем, только когда можем оттолкнуться от земли
                 self.yvel = -JUMP_POWER
 
@@ -125,11 +139,15 @@ class Enemy(sprite.Sprite):
                     self.rect.top = p.rect.bottom  # то не движется вверх
                     self.yvel = 0  # и энергия прыжка пропадает
 
-    def shoot(self, entity_group, pos_mouse_x, pos_mouse_y):
+    def II(self, hero_pos_x, hero_pos_y, platforms, hero):
+        r = 200
+        if (hero.rect.centerx - self.rect.centerx) ** 2 + (hero.rect.centery - self.rect.centery) ** 2 <= r * r:
+            self.shoot(self.bullets_group, hero_pos_x, hero_pos_y)
 
-        speed_x, speed_y = find_speed(pos_mouse_x, pos_mouse_y)
+    def shoot(self, bullets_group, pos_mouse_x, pos_mouse_y):
 
-        bullet = Bullet(self.rect.centerx - (BULLET_SIZE // 2),
+        speed_x, speed_y = find_enemy_speed(pos_mouse_x, pos_mouse_y)
+
+        bullet = EnemyBullet(self.rect.centerx - (BULLET_SIZE // 2),
                         self.rect.centery - (BULLET_SIZE // 2), speed_x, speed_y)
-        entity_group.add(bullet)
-        bullets.add(bullet)
+        bullets_group.add(bullet)
