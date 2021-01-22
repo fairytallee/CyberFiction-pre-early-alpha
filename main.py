@@ -3,8 +3,8 @@ from pygame import *
 import os
 
 
-from player import Player
-from player import Bullet
+from Entities import Player
+from Entities import Bullet
 from Enemies import Enemy
 
 
