@@ -20,8 +20,6 @@ class Enemy(sprite.Sprite):
         if not self.onGround:
             self.yvel += 0.35
         self.collide(self.yvel, platforms)
-
-        self.rect.x += self.xvel  # переносим свои положение на xvel
         self.collide(self.xvel, platforms)
 
     def collide(self, yvel, platforms):

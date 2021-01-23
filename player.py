@@ -59,11 +59,6 @@ def find_speed(pos_mouse_x, pos_mouse_y):
 
     angel = math.radians(abs(math.degrees(math.atan2(abs(pos_mouse_x - x), abs(y - pos_mouse_y))) - 90))
 
-    print(f"hero x: {x} y: {y}")
-    print(f'angel: {math.degrees(angel)} degrees')
-    print(f"mouse: x: {pos_mouse_x} y: {pos_mouse_y}")
-    print()
-
     speed_x, speed_y = 0, 0
 
     if x < pos_mouse_x and y > pos_mouse_y:
