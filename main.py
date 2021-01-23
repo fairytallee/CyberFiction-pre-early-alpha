@@ -1,14 +1,13 @@
 import pygame
 from pygame import *
 import os
+import pyautogui
 
-
-from player import Player
-from player import Bullet
+from Entities import Bullet, Player
 from Enemies import Enemy
+import Menu
 
-
-WIN_WIDTH, WIN_HEIGHT = 1920, 1080
+WIN_WIDTH, WIN_HEIGHT = pyautogui.size()[0], pyautogui.size()[1]
 size = (WIN_WIDTH, WIN_HEIGHT)  # Группируем ширину и высоту в одну переменную
 
 pygame.init()  # Инициация PyGame, обязательная строчка
@@ -128,8 +127,7 @@ PLATFORM_COLOR = "black"
 BACKGROUND_COLOR = "white"
 
 tile_images = {
-    'wall': load_image('wall.png'),
-    'empty': load_image('grass.png')
+    'wall': load_image('rock.png')
 }
 
 tiles_group = SpriteGroup()
@@ -213,7 +211,7 @@ def main():
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:
-                        hero.shoot(entity_group, pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])
+                        hero.shoot(entity_group, all_sprites, pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])
 
             screen.fill('black')
 
@@ -238,11 +236,12 @@ def main():
             for event in pygame.event.get():  # Обрабатываем события
                 if event.type == QUIT:
                     process = False
-                if event.type == KEYDOWN and event.key == K_SPACE:
+                if event.type == MOUSEBUTTONDOWN and WIN_WIDTH - 320 < event.pos[0] < WIN_WIDTH - 120 and WIN_HEIGHT - 60 < event.pos[1] < WIN_HEIGHT - 10:
                     state = running
-                    # screen.fill('black')
+                if event.type == MOUSEBUTTONDOWN and WIN_WIDTH - 110 < event.pos[0] < WIN_WIDTH - 10 and WIN_HEIGHT - 60 < event.pos[1] < WIN_HEIGHT - 10:
+                    process = False
 
-            menu_pause(screen)
+            Menu.menu_pause(screen)
 
         clock.tick(FPS)
         pygame.display.flip()
