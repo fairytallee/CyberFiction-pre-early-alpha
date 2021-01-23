@@ -78,8 +78,12 @@ def generate_level(level):
         for x in range(len(level[y])):
             if level[y][x] == '.':
                 pass
-            elif level[y][x] == '#':
-                Tile('wall', x, y)
+            elif level[y][x] == '1':
+                Tile('wall1', x, y)
+            elif level[y][x] == '2':
+                Tile('wall2', x, y)
+            elif level[y][x] == '3':
+                Tile('wall3', x, y)
             elif level[y][x] == '@':
                 new_player = Player(PLATFORM_WIDTH * (x - 1), PLATFORM_HEIGHT * y)
                 ll = list(level[y])
@@ -127,7 +131,9 @@ PLATFORM_COLOR = "black"
 BACKGROUND_COLOR = "white"
 
 tile_images = {
-    'wall': load_image('rock.png')
+    'wall1': load_image('metal1.png'),
+    'wall2': load_image('metal2.png'),
+    'wall3': load_image('metal3.png')
 }
 
 tiles_group = SpriteGroup()
@@ -156,7 +162,6 @@ camera.update(hero)
 
 
 def menu_pause(screen):
-
     sur = pygame.Surface((500, 600))
     sur.fill((150, 150, 150, 100))
     screen.blit(sur, ((WIN_WIDTH // 2) - 250, (WIN_HEIGHT // 2) - 300))
@@ -236,9 +241,11 @@ def main():
             for event in pygame.event.get():  # Обрабатываем события
                 if event.type == QUIT:
                     process = False
-                if event.type == MOUSEBUTTONDOWN and WIN_WIDTH - 320 < event.pos[0] < WIN_WIDTH - 120 and WIN_HEIGHT - 60 < event.pos[1] < WIN_HEIGHT - 10:
+                if event.type == MOUSEBUTTONDOWN and WIN_WIDTH - 320 < event.pos[0] < WIN_WIDTH - 120 and\
+                        WIN_HEIGHT - 60 < event.pos[1] < WIN_HEIGHT - 10:
                     state = running
-                if event.type == MOUSEBUTTONDOWN and WIN_WIDTH - 110 < event.pos[0] < WIN_WIDTH - 10 and WIN_HEIGHT - 60 < event.pos[1] < WIN_HEIGHT - 10:
+                if event.type == MOUSEBUTTONDOWN and WIN_WIDTH - 110 < event.pos[0] < WIN_WIDTH - 10 and\
+                        WIN_HEIGHT - 60 < event.pos[1] < WIN_HEIGHT - 10:
                     process = False
 
             Menu.menu_pause(screen)
