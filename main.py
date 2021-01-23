@@ -6,7 +6,6 @@ import os
 from player import Player
 from player import Bullet
 from Enemies import Enemy
-import Menu
 
 
 WIN_WIDTH, WIN_HEIGHT = 1920, 1080
@@ -81,7 +80,7 @@ def generate_level(level):
             if level[y][x] == '.':
                 pass
             elif level[y][x] == '#':
-                Tile('rock', x, y)
+                Tile('wall', x, y)
             elif level[y][x] == '@':
                 new_player = Player(PLATFORM_WIDTH * (x - 1), PLATFORM_HEIGHT * y)
                 ll = list(level[y])
@@ -111,6 +110,12 @@ def camera_configure(camera, target_rect):
     l, t, _, _ = target_rect
     _, _, w, h = camera
     l, t = -l + WIN_WIDTH / 2, -t + WIN_HEIGHT / 2
+
+    # l = min(0, l)  # Не движемся дальше левой границы
+    # l = max(-(camera.width - WIN_WIDTH), l)  # Не движемся дальше правой границы
+    # t = max(-(camera.height - WIN_HEIGHT), t)  # Не движемся дальше нижней границы
+    # t = min(0, t)  # Не движемся дальше верхней границы
+
     return Rect(l, t, w, h)
 
 
@@ -123,10 +128,8 @@ PLATFORM_COLOR = "black"
 BACKGROUND_COLOR = "white"
 
 tile_images = {
-    'rock': load_image('rock.png'),
-    'dirt': load_image('dirt.png'),
-    'doski': load_image('doski.png'),
-    'pause_gradient': load_image('pause_gradient.png')
+    'wall': load_image('wall.png'),
+    'empty': load_image('grass.png')
 }
 
 tiles_group = SpriteGroup()
@@ -152,6 +155,26 @@ right = False
 up = False
 
 camera.update(hero)
+
+
+def menu_pause(screen):
+
+    sur = pygame.Surface((500, 600))
+    sur.fill((150, 150, 150, 100))
+    screen.blit(sur, ((WIN_WIDTH // 2) - 250, (WIN_HEIGHT // 2) - 300))
+    # pygame.draw.rect(screen, (207, 207, 207, 127), ((WIN_WIDTH // 2) - 250, (WIN_HEIGHT // 2) - 250, 500, 500))500
+
+    pause_text = ["Не боись, это меню паузы", "Тыкни пробел"]
+    font = pygame.font.Font(None, 50)
+    offset_down = 0
+    for line in pause_text:
+        text = font.render(line, True, (255, 255, 255, 1))
+        text_x = WIN_WIDTH // 2 - text.get_width() // 2
+        text_y = ((WIN_HEIGHT // 2 - text.get_height() // 2) - 250) + offset_down
+        text_w = text.get_width()
+        text_h = text.get_height()
+        screen.blit(text, (text_x, text_y))
+        offset_down += 50
 
 
 def main():
@@ -215,12 +238,11 @@ def main():
             for event in pygame.event.get():  # Обрабатываем события
                 if event.type == QUIT:
                     process = False
-                if event.type == MOUSEBUTTONDOWN and 860 < event.pos[0] < 1060 and 600 < event.pos[1] < 700:
+                if event.type == KEYDOWN and event.key == K_SPACE:
                     state = running
-                if event.type == MOUSEBUTTONDOWN and 910 < event.pos[0] < 1010 and 725 < event.pos[1] < 775:
-                    process = False
+                    # screen.fill('black')
 
-            Menu.menu_pause(screen)
+            menu_pause(screen)
 
         clock.tick(FPS)
         pygame.display.flip()

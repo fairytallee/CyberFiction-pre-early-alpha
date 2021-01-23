@@ -3,8 +3,8 @@ from pygame import *
 import math
 import time
 
-# WIN_WIDTH, WIN_HEIGHT = 700, 700
-WIN_WIDTH, WIN_HEIGHT = 1920, 1080
+WIN_WIDTH, WIN_HEIGHT = 700, 700
+# WIN_WIDTH, WIN_HEIGHT = 1920, 1080
 
 JUMP_POWER = 10
 GRAVITY = 0.35  # Сила, которая будет тянуть нас вниз
@@ -17,9 +17,6 @@ BULLET_SIZE = 10
 BULLET_SPEED = 20
 
 COLOR = "white"
-
-sprites = pygame.sprite.Group()
-bullets = pygame.sprite.Group()
 
 
 class Bullet(sprite.Sprite):
@@ -35,8 +32,9 @@ class Bullet(sprite.Sprite):
         self.speedx = speedx
         self.speedy = speedy
 
+        self.kill_distance = 2000
+
     def collide(self, platforms):
-        pass
         for p in platforms:
             if sprite.collide_rect(self, p):
                 self.kill()
@@ -47,8 +45,8 @@ class Bullet(sprite.Sprite):
 
         self.collide(platforms)
 
-        if self.rect.x - self.x0 == 3000 or self.x0 - self.rect.x == 3000 \
-                or self.rect.y - self.y0 == 3000 or self.y0 - self.rect.y == 3000:
+        if self.rect.x - self.x0 > self.kill_distance or self.x0 - self.rect.x > self.kill_distance \
+                or self.rect.y - self.y0 > self.kill_distance or self.y0 - self.rect.y > self.kill_distance:
             self.kill()
 
 
@@ -156,11 +154,11 @@ class Player(sprite.Sprite):
                     self.rect.top = p.rect.bottom  # то не движется вверх
                     self.yvel = 0  # и энергия прыжка пропадает
 
-    def shoot(self, entity_group, pos_mouse_x, pos_mouse_y):
+    def shoot(self, bullets_group, all_sprites, pos_mouse_x, pos_mouse_y):
 
         speed_x, speed_y = find_speed(pos_mouse_x, pos_mouse_y)
 
         bullet = Bullet(self.rect.centerx - (BULLET_SIZE // 2),
                         self.rect.centery - (BULLET_SIZE // 2), speed_x, speed_y)
-        entity_group.add(bullet)
-        bullets.add(bullet)
+        bullets_group.add(bullet)
+        all_sprites.add(bullet)
