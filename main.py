@@ -139,7 +139,7 @@ PLATFORM_COLOR = "black"
 BACKGROUND_COLOR = "white"
 
 tile_images = {
-    'wall': load_image('wall.png')
+    'wall': load_image('metal1.png')
 }
 
 tiles_group = SpriteGroup()
@@ -226,7 +226,7 @@ def main():
                         hero.shoot(bullets_group, all_sprites, pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])
 
             screen.fill('black')
-            # oejfosfp nbgjhgytyfd6
+            # oejfosfp nbgj
 
             camera.update(hero)
 
