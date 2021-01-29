@@ -1,13 +1,16 @@
 import pygame
 from pygame import *
 import os
-import pyautogui
-
-from Entities import Bullet, Player
+from Entities import Player
+from Entities import Bullet
 from Enemies import Enemy
 import Menu
+import pyautogui
 
+# WIN_WIDTH, WIN_HEIGHT = 700, 700
+# WIN_WIDTH, WIN_HEIGHT = 1920, 1080
 WIN_WIDTH, WIN_HEIGHT = pyautogui.size()[0], pyautogui.size()[1]
+
 size = (WIN_WIDTH, WIN_HEIGHT)  # Группируем ширину и высоту в одну переменную
 
 pygame.init()  # Инициация PyGame, обязательная строчка
@@ -46,7 +49,7 @@ def load_level(filename):
 class ScreenFrame(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.rect = (0, 0, 1920, 1080)
+        self.rect = (0, 0, WIN_WIDTH, WIN_HEIGHT)
 
 
 class SpriteGroup(pygame.sprite.Group):
@@ -72,26 +75,31 @@ class Tile(Sprite):
         self.abs_pos = (self.rect.x, self.rect.y)
 
 
+tiles_group = SpriteGroup()
+all_sprites = SpriteGroup()
+entity_group = SpriteGroup()
+bullets_group = SpriteGroup()
+
+
 def generate_level(level):
     new_player, enemy_group, x, y = None, SpriteGroup(), None, None
     for y in range(len(level)):
         for x in range(len(level[y])):
             if level[y][x] == '.':
                 pass
-            elif level[y][x] == '1':
-                Tile('wall1', x, y)
             elif level[y][x] == '2':
-                Tile('wall2', x, y)
-            elif level[y][x] == '3':
-                Tile('wall3', x, y)
+                Tile('wall', x, y)
             elif level[y][x] == '@':
                 new_player = Player(PLATFORM_WIDTH * (x - 1), PLATFORM_HEIGHT * y)
                 ll = list(level[y])
                 ll[x] = '.'
                 level[y] = ll
             elif level[y][x] == 'e':
-                new_enemy = Enemy(PLATFORM_WIDTH * (x - 1), PLATFORM_HEIGHT * y)
+                new_enemy = Enemy(PLATFORM_WIDTH * (x - 1), PLATFORM_HEIGHT * y, bullets_group, all_sprites, None)
                 enemy_group.add(new_enemy)
+
+    for en in enemy_group:
+        en.hero = new_player
 
     # вернем игрока, а также размер поля в клетках
     return new_player, enemy_group, x, y
@@ -131,15 +139,13 @@ PLATFORM_COLOR = "black"
 BACKGROUND_COLOR = "white"
 
 tile_images = {
-    'wall1': load_image('metal1.png'),
-    'wall2': load_image('metal2.png'),
-    'wall3': load_image('metal3.png')
+    'wall': load_image('metal1.png')
 }
 
 tiles_group = SpriteGroup()
 all_sprites = SpriteGroup()
 entity_group = SpriteGroup()
-bullet_group = SpriteGroup()
+bullets_group = SpriteGroup()
 
 level_map = load_level('map.map')
 
@@ -162,6 +168,7 @@ camera.update(hero)
 
 
 def menu_pause(screen):
+
     sur = pygame.Surface((500, 600))
     sur.fill((150, 150, 150, 100))
     screen.blit(sur, ((WIN_WIDTH // 2) - 250, (WIN_HEIGHT // 2) - 300))
@@ -216,9 +223,10 @@ def main():
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:
-                        hero.shoot(entity_group, all_sprites, pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])
+                        hero.shoot(bullets_group, all_sprites, pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])
 
             screen.fill('black')
+            # oejfosfp nbgj
 
             camera.update(hero)
 
@@ -226,29 +234,43 @@ def main():
                 screen.blit(spr.image, camera.apply(spr))
             for e in entity_group:
                 screen.blit(e.image, camera.apply(e))
-            for bul in entity_group:
+            for bul in bullets_group:
+                screen.blit(bul.image, camera.apply(bul))
                 if isinstance(bul, Bullet):
                     bul.update_bullet(tiles_group)
-            hits = sprite.spritecollide(hero, enemy_group, True)
+            hits = sprite.spritecollide(hero, enemy_group, False)
             if hits:
-                process = False
+                pass
+                # process = False
 
             hero.update(left, right, up, tiles_group)
             for e in enemy_group:
                 e.update(tiles_group)
 
+            print(len(all_sprites))
+
         elif state == pause:
             for event in pygame.event.get():  # Обрабатываем события
                 if event.type == QUIT:
                     process = False
-                if event.type == MOUSEBUTTONDOWN and WIN_WIDTH - 320 < event.pos[0] < WIN_WIDTH - 120 and\
+                if event.type == MOUSEBUTTONDOWN and WIN_WIDTH - 320 < event.pos[0] < WIN_WIDTH - 120 and \
                         WIN_HEIGHT - 60 < event.pos[1] < WIN_HEIGHT - 10:
                     state = running
-                if event.type == MOUSEBUTTONDOWN and WIN_WIDTH - 110 < event.pos[0] < WIN_WIDTH - 10 and\
+                if event.type == MOUSEBUTTONDOWN and WIN_WIDTH - 110 < event.pos[0] < WIN_WIDTH - 10 and \
                         WIN_HEIGHT - 60 < event.pos[1] < WIN_HEIGHT - 10:
                     process = False
 
             Menu.menu_pause(screen)
+
+        # # elif state == pause:
+        # #     for event in pygame.event.get():  # Обрабатываем события
+        # #         if event.type == QUIT:
+        # #             process = False
+        # #         if event.type == KEYDOWN and event.key == K_SPACE:
+        # #             state = running
+        # #             # screen.fill('black')
+        #
+        #     menu_pause(screen)
 
         clock.tick(FPS)
         pygame.display.flip()

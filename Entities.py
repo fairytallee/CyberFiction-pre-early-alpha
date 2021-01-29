@@ -2,9 +2,11 @@ import pygame
 from pygame import *
 import math
 import time
+import pyautogui
 
-WIN_WIDTH, WIN_HEIGHT = 700, 700
+# WIN_WIDTH, WIN_HEIGHT = 700, 700
 # WIN_WIDTH, WIN_HEIGHT = 1920, 1080
+WIN_WIDTH, WIN_HEIGHT = pyautogui.size()[0], pyautogui.size()[1]
 
 JUMP_POWER = 10
 GRAVITY = 0.35  # Сила, которая будет тянуть нас вниз
@@ -56,6 +58,11 @@ def find_speed(pos_mouse_x, pos_mouse_y):
     y = WIN_HEIGHT // 2 + 20
 
     angel = math.radians(abs(math.degrees(math.atan2(abs(pos_mouse_x - x), abs(y - pos_mouse_y))) - 90))
+
+    print(f"hero x: {x} y: {y}")
+    print(f'angel: {math.degrees(angel)} degrees')
+    print(f"mouse: x: {pos_mouse_x} y: {pos_mouse_y}")
+    print()
 
     speed_x, speed_y = 0, 0
 
