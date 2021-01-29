@@ -25,6 +25,7 @@ BULLET_SPEED = 20
 class EnemyBullet(Bullet):
     def __init__(self, x, y, speedx, speedy):
         super().__init__(x, y, speedx, speedy)
+        self.image.fill((555, 0, 0))
 
 
 def find_enemy_speed(pos_mouse_x, pos_mouse_y, self_pos_x, self_pos_y):
