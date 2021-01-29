@@ -226,6 +226,7 @@ def main():
                         hero.shoot(bullets_group, all_sprites, pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])
 
             screen.fill('black')
+            # oejfosfp nbgj
 
             camera.update(hero)
 
