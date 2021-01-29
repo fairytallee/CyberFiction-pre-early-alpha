@@ -2,10 +2,12 @@ import pygame
 from pygame import *
 from Entities import Bullet
 import math
-import time
+import random
+import pyautogui
 
+# WIN_WIDTH, WIN_HEIGHT = 700, 700
 # WIN_WIDTH, WIN_HEIGHT = 1920, 1080
-WIN_WIDTH, WIN_HEIGHT = 700, 700
+WIN_WIDTH, WIN_HEIGHT = pyautogui.size()[0], pyautogui.size()[1]
 
 JUMP_POWER = 10
 GRAVITY = 0.35  # Сила, которая будет тянуть нас вниз
@@ -17,7 +19,7 @@ ENEMY_HEIGHT = 70
 COLOR = 'red'
 
 BULLET_SIZE = 10
-BULLET_SPEED = 15
+BULLET_SPEED = 20
 
 
 class EnemyBullet(Bullet):
@@ -153,11 +155,9 @@ class Enemy(sprite.Sprite):
     def II(self, hero_pos_x, hero_pos_y, platforms, hero):
         r = 500
         if (hero.rect.centerx - self.rect.centerx) ** 2 + (hero.rect.centery - self.rect.centery) ** 2 <= r * r:
-            print()
-            if pygame.time.get_ticks() - self.start_timer > 300:
+            if pygame.time.get_ticks() - self.start_timer > random.randrange(300, 1200):
                 self.shoot(self.bullets_group, self.all_sprites, hero_pos_x, hero_pos_y)
                 self.start_timer = pygame.time.get_ticks()
-            print(self.start_timer)
 
     def shoot(self, bullets_group, all_sprites, pos_mouse_x, pos_mouse_y):
 
