@@ -19,7 +19,7 @@ ENEMY_HEIGHT = 70
 COLOR = 'red'
 
 BULLET_SIZE = 10
-BULLET_SPEED = 20
+BULLET_SPEED = 17
 
 
 class EnemyBullet(Bullet):
@@ -33,7 +33,8 @@ class EnemyBullet(Bullet):
             if sprite.collide_rect(self, p):
                 self.kill()
         if sprite.collide_rect(self, self.hero):
-            pygame.quit()
+            self.hero.heals_points -= 10
+            print(self.hero.heals_points)
 
 
 def find_enemy_speed(pos_mouse_x, pos_mouse_y, self_pos_x, self_pos_y):

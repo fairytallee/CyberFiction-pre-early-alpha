@@ -97,6 +97,7 @@ def generate_level(level):
             elif level[y][x] == 'e':
                 new_enemy = Enemy(PLATFORM_WIDTH * (x - 1), PLATFORM_HEIGHT * y, bullets_group, all_sprites, None)
                 enemy_group.add(new_enemy)
+                entity_group.add(new_enemy)
 
     for en in enemy_group:
         en.hero = new_player
@@ -247,7 +248,7 @@ def main():
             for e in enemy_group:
                 e.update(tiles_group)
 
-            print(len(all_sprites))
+            # print(len(all_sprites))
 
         elif state == pause:
             for event in pygame.event.get():  # Обрабатываем события

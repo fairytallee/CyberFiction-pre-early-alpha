@@ -14,6 +14,7 @@ GRAVITY = 0.35  # Сила, которая будет тянуть нас вни
 HERO_MOVE_SPEED = 7
 HERO_WIDTH = 20
 HERO_HEIGHT = 50
+HERO_HP = 100
 
 BULLET_SIZE = 10
 BULLET_SPEED = 20
@@ -105,6 +106,8 @@ class Player(sprite.Sprite):
 
         self.onGround = False  # На земле ли я?
 
+        self.heals_points = HERO_HP
+
         self.yvel = 0  # скорость вертикального перемещения
         self.xvel = 0  # скорость перемещения. 0 - стоять на месте
 
@@ -141,6 +144,9 @@ class Player(sprite.Sprite):
 
         self.rect.x += self.xvel  # переносим свои положение на xvel
         self.collide(self.xvel, 0, platforms)
+
+        if self.heals_points <= 0:
+            pygame.quit()
 
     def collide(self, xvel, yvel, platforms):
         for p in platforms:
