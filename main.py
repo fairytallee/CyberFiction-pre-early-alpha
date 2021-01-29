@@ -87,7 +87,7 @@ def generate_level(level):
         for x in range(len(level[y])):
             if level[y][x] == '.':
                 pass
-            elif level[y][x] == '#':
+            elif level[y][x] == '2':
                 Tile('wall', x, y)
             elif level[y][x] == '@':
                 new_player = Player(PLATFORM_WIDTH * (x - 1), PLATFORM_HEIGHT * y)

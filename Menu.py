@@ -18,12 +18,26 @@ def create_button(screen, size, color, pos):
 
 def menu_pause(screen):
     global width, height
+
+    half_w = width // 2
+    pause_text = ["Pause", "Continue", "Quit"]
+
     image = pygame.image.load('data/pause_gradient.png').convert_alpha()
     screen.blit(image, (0, 0))
 
-    pause_text = ["Pause", "Continue", "Quit"]
-    write(screen, pause_text[0], 760, 260, (255, 255, 255), 200)
+    wasd = pygame.image.load('data/wasd.png').convert_alpha()
+    wasd = pygame.transform.scale(wasd, (400, 400))
+    screen.blit(wasd, (width - 1700, height - 700))
+    write(screen, '- move', width - 1300, height - 550, (255, 255, 255), 100)
+
+    shoot = pygame.image.load('data/лкм.png').convert_alpha()
+    screen.blit(shoot, (width - 1050, height - 750))
+    write(screen, '- shoot', width - 600, height - 550, (255, 255, 255), 100)
+
+    write(screen, pause_text[0], half_w - half_w // 5, height // 10, (255, 255, 255), 200)
+
     create_button(screen, (200, 50), (206, 48, 39), (width - 320, height - 60))
     write(screen, pause_text[1], width - 300, height - 35, (255, 255, 255), 50)
+
     create_button(screen, (100, 50), (206, 48, 39), (width - 110, height - 60))
     write(screen, pause_text[2], width - 90, height - 35, (255, 255, 255), 35)
