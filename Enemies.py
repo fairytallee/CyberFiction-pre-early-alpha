@@ -23,9 +23,17 @@ BULLET_SPEED = 20
 
 
 class EnemyBullet(Bullet):
-    def __init__(self, x, y, speedx, speedy):
+    def __init__(self, x, y, speedx, speedy, hero):
         super().__init__(x, y, speedx, speedy)
         self.image.fill((255, 0, 0))
+        self.hero = hero
+
+    def collide(self, platforms):
+        for p in platforms:
+            if sprite.collide_rect(self, p):
+                self.kill()
+        if sprite.collide_rect(self, self.hero):
+            pygame.quit()
 
 
 def find_enemy_speed(pos_mouse_x, pos_mouse_y, self_pos_x, self_pos_y):
@@ -165,6 +173,6 @@ class Enemy(sprite.Sprite):
         speed_x, speed_y = find_enemy_speed(pos_mouse_x, pos_mouse_y, self.rect.centerx, self.rect.centery)
 
         bullet = EnemyBullet(self.rect.centerx - (BULLET_SIZE // 2),
-                        self.rect.centery - (BULLET_SIZE // 2), speed_x, speed_y)
+                        self.rect.centery - (BULLET_SIZE // 2), speed_x, speed_y, self.hero)
         bullets_group.add(bullet)
         all_sprites.add(bullet)
