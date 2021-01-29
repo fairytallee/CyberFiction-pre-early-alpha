@@ -34,6 +34,7 @@ class EnemyBullet(Bullet):
                 self.kill()
         if sprite.collide_rect(self, self.hero):
             self.hero.heals_points -= 10
+            self.kill()
             print(self.hero.heals_points)
 
 

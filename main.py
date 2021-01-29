@@ -14,8 +14,8 @@ WIN_WIDTH, WIN_HEIGHT = pyautogui.size()[0], pyautogui.size()[1]
 size = (WIN_WIDTH, WIN_HEIGHT)  # Группируем ширину и высоту в одну переменную
 
 pygame.init()  # Инициация PyGame, обязательная строчка
-screen = pygame.display.set_mode(size)  # Создаем окошко
-screen.fill('black')
+screen = pygame.display.set_mode(size, pygame.SRCALPHA)  # Создаем окошко
+screen.fill((0, 0, 0, 0))
 
 
 def load_image(name, colorkey=None):
@@ -169,7 +169,6 @@ camera.update(hero)
 
 
 def menu_pause(screen):
-
     sur = pygame.Surface((500, 600))
     sur.fill((150, 150, 150, 100))
     screen.blit(sur, ((WIN_WIDTH // 2) - 250, (WIN_HEIGHT // 2) - 300))
@@ -188,8 +187,11 @@ def menu_pause(screen):
         offset_down += 50
 
 
+screen2 = Surface(size, pygame.SRCALPHA)
+
+
 def main():
-    global left, right, up, hero, enemy
+    global left, right, up, hero, enemy, screenshot
     pygame.display.set_caption("test")
 
     running, pause, process = 1, 0, True
@@ -221,6 +223,9 @@ def main():
                     up = False
                     left = False
                     right = False
+                    back = screen.subsurface(screen.get_rect())
+                    screenshot = Surface(size)
+                    screenshot.blit(back, (0, 0))
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:
@@ -254,14 +259,18 @@ def main():
             for event in pygame.event.get():  # Обрабатываем события
                 if event.type == QUIT:
                     process = False
-                if event.type == MOUSEBUTTONDOWN and WIN_WIDTH - 320 < event.pos[0] < WIN_WIDTH - 120 and \
-                        WIN_HEIGHT - 60 < event.pos[1] < WIN_HEIGHT - 10:
+                if event.type == MOUSEBUTTONDOWN and 160 < event.pos[0] < 360 and \
+                        30 < event.pos[1] < 80:
                     state = running
-                if event.type == MOUSEBUTTONDOWN and WIN_WIDTH - 110 < event.pos[0] < WIN_WIDTH - 10 and \
-                        WIN_HEIGHT - 60 < event.pos[1] < WIN_HEIGHT - 10:
+                if event.type == MOUSEBUTTONDOWN and 30 < event.pos[0] < 130 and \
+                        30 < event.pos[1] < 80:
                     process = False
 
-            Menu.menu_pause(screen)
+            screen.blit(screenshot, (0, 0))
+            Menu.menu_pause(screen2, screenshot)
+
+            screen.blit(screen2, (0, 0))
+            screen2.fill((0, 0, 0, 0))
 
         # # elif state == pause:
         # #     for event in pygame.event.get():  # Обрабатываем события
