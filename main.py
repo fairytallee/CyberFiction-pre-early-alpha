@@ -252,7 +252,7 @@ def main():
                     bul.update_bullet(tiles_group, enemy_group)
             hits = sprite.spritecollide(hero, enemy_group, False)
             if hits:
-                pass
+                hero.heals_points -= 100
                 # process = False
 
             hero.update(left, right, up, tiles_group)
