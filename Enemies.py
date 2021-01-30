@@ -15,6 +15,7 @@ GRAVITY = 0.35  # Сила, которая будет тянуть нас вни
 ENEMY_MOVE_SPEED = random.randrange(3, 7)
 ENEMY_WIDTH = 30
 ENEMY_HEIGHT = 70
+ENEMY_HP = 70
 
 COLOR = 'red'
 
@@ -36,6 +37,16 @@ class EnemyBullet(Bullet):
             self.hero.heals_points -= 10
             self.kill()
             print(self.hero.heals_points)
+
+    def update_bullet(self, platforms):
+        self.rect.centerx += self.speedx
+        self.rect.centery += self.speedy
+
+        self.collide(platforms)
+
+        if self.rect.x - self.x0 > self.kill_distance or self.x0 - self.rect.x > self.kill_distance \
+                or self.rect.y - self.y0 > self.kill_distance or self.y0 - self.rect.y > self.kill_distance:
+            self.kill()
 
 
 def find_enemy_speed(pos_mouse_x, pos_mouse_y, self_pos_x, self_pos_y):
@@ -118,7 +129,9 @@ class Enemy(sprite.Sprite):
 
         self.hero = hero
 
-        self.bullet_speed = 1000
+        self.heals_points = ENEMY_HP
+
+        self.bullet_speed = BULLET_SPEED
 
         self.shoot_pass = True
 
@@ -132,6 +145,9 @@ class Enemy(sprite.Sprite):
         self.up = False
 
     def update(self, platforms):
+
+        if self.heals_points <= 0:
+            self.kill()
 
         self.II(self.hero.rect.centerx, self.hero.rect.centery, platforms, self.hero)
 

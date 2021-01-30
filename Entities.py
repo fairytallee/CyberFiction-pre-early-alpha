@@ -18,6 +18,7 @@ HERO_HP = 100
 
 BULLET_SIZE = 10
 BULLET_SPEED = 20
+BULLET_DAMAGE = 10
 
 COLOR = "white"
 
@@ -34,19 +35,24 @@ class Bullet(sprite.Sprite):
         self.rect.y = y
         self.speedx = speedx
         self.speedy = speedy
+        self.damage = BULLET_DAMAGE
 
         self.kill_distance = 2000
 
-    def collide(self, platforms):
+    def collide(self, platforms, enemies_group):
         for p in platforms:
             if sprite.collide_rect(self, p):
                 self.kill()
+        for en in enemies_group:
+            if sprite.collide_rect(self, en):
+                en.heals_points -= self.damage
+                self.kill()
 
-    def update_bullet(self, platforms):
+    def update_bullet(self, platforms, enemies_group):
         self.rect.centerx += self.speedx
         self.rect.centery += self.speedy
 
-        self.collide(platforms)
+        self.collide(platforms, enemies_group)
 
         if self.rect.x - self.x0 > self.kill_distance or self.x0 - self.rect.x > self.kill_distance \
                 or self.rect.y - self.y0 > self.kill_distance or self.y0 - self.rect.y > self.kill_distance:

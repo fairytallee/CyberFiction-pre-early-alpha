@@ -3,7 +3,7 @@ from pygame import *
 import os
 from Entities import Player
 from Entities import Bullet
-from Enemies import Enemy
+from Enemies import Enemy, EnemyBullet
 import Menu
 import pyautogui
 import random
@@ -246,8 +246,10 @@ def main():
                 screen.blit(e.image, camera.apply(e))
             for bul in bullets_group:
                 screen.blit(bul.image, camera.apply(bul))
-                if isinstance(bul, Bullet):
+                if isinstance(bul, EnemyBullet):
                     bul.update_bullet(tiles_group)
+                elif isinstance(bul, Bullet):
+                    bul.update_bullet(tiles_group, enemy_group)
             hits = sprite.spritecollide(hero, enemy_group, False)
             if hits:
                 pass
