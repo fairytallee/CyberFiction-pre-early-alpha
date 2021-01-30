@@ -171,26 +171,6 @@ up = False
 
 camera.update(hero)
 
-
-def menu_pause(screen):
-    sur = pygame.Surface((500, 600))
-    sur.fill((150, 150, 150, 100))
-    screen.blit(sur, ((WIN_WIDTH // 2) - 250, (WIN_HEIGHT // 2) - 300))
-    # pygame.draw.rect(screen, (207, 207, 207, 127), ((WIN_WIDTH // 2) - 250, (WIN_HEIGHT // 2) - 250, 500, 500))500
-
-    pause_text = ["Не боись, это меню паузы", "Тыкни пробел"]
-    font = pygame.font.Font(None, 50)
-    offset_down = 0
-    for line in pause_text:
-        text = font.render(line, True, (255, 255, 255, 1))
-        text_x = WIN_WIDTH // 2 - text.get_width() // 2
-        text_y = ((WIN_HEIGHT // 2 - text.get_height() // 2) - 250) + offset_down
-        text_w = text.get_width()
-        text_h = text.get_height()
-        screen.blit(text, (text_x, text_y))
-        offset_down += 50
-
-
 screen2 = Surface(size, pygame.SRCALPHA)
 
 
@@ -255,7 +235,7 @@ def main():
                 hero.heals_points -= 100
                 # process = False
 
-            hero.update(left, right, up, tiles_group)
+            hero.update(left, right, up, tiles_group, screen)
             for e in enemy_group:
                 e.update(tiles_group)
 

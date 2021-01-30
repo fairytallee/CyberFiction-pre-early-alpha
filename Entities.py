@@ -127,7 +127,11 @@ class Player(sprite.Sprite):
 
         self.bullet_speed = 20
 
-    def update(self, left, right, up, platforms):
+    def update(self, left, right, up, platforms, screen):
+
+        self.hp_line = pygame.Rect(WIN_WIDTH // 2 - 200, 20, 400, 10)
+        pygame.draw.rect(screen, 'blue', self.hp_line, 3, 0, 0, 0, 0, 0)
+
         if left:
             self.xvel = -HERO_MOVE_SPEED  # Лево = x- n
 
