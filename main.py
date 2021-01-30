@@ -6,6 +6,7 @@ from Entities import Bullet
 from Enemies import Enemy
 import Menu
 import pyautogui
+import random
 
 # WIN_WIDTH, WIN_HEIGHT = 700, 700
 # WIN_WIDTH, WIN_HEIGHT = 1920, 1080
@@ -78,11 +79,14 @@ class Tile(Sprite):
 tiles_group = SpriteGroup()
 all_sprites = SpriteGroup()
 entity_group = SpriteGroup()
+enemy_group = SpriteGroup()
 bullets_group = SpriteGroup()
 
 
 def generate_level(level):
-    new_player, enemy_group, x, y = None, SpriteGroup(), None, None
+    x = 0
+    y = 0
+    new_player = None
     for y in range(len(level)):
         for x in range(len(level[y])):
             if level[y][x] == '.':
@@ -90,12 +94,12 @@ def generate_level(level):
             elif level[y][x] == '#':
                 Tile('wall', x, y)
             elif level[y][x] == '@':
-                new_player = Player(PLATFORM_WIDTH * (x - 1), PLATFORM_HEIGHT * y)
+                new_player = Player(PLATFORM_WIDTH * x + PLATFORM_WIDTH // 2, PLATFORM_HEIGHT * y)
                 ll = list(level[y])
                 ll[x] = '.'
                 level[y] = ll
             elif level[y][x] == 'e':
-                new_enemy = Enemy(PLATFORM_WIDTH * (x - 1), PLATFORM_HEIGHT * y, bullets_group, all_sprites, None)
+                new_enemy = Enemy(PLATFORM_WIDTH * x, PLATFORM_HEIGHT * y, random.randrange(2, 5), bullets_group, all_sprites, None)
                 enemy_group.add(new_enemy)
                 entity_group.add(new_enemy)
 

@@ -12,7 +12,7 @@ WIN_WIDTH, WIN_HEIGHT = pyautogui.size()[0], pyautogui.size()[1]
 JUMP_POWER = 10
 GRAVITY = 0.35  # Сила, которая будет тянуть нас вниз
 
-ENEMY_MOVE_SPEED = 6
+ENEMY_MOVE_SPEED = random.randrange(3, 7)
 ENEMY_WIDTH = 30
 ENEMY_HEIGHT = 70
 
@@ -39,7 +39,6 @@ class EnemyBullet(Bullet):
 
 
 def find_enemy_speed(pos_mouse_x, pos_mouse_y, self_pos_x, self_pos_y):
-
     x = self_pos_x
     y = self_pos_y
 
@@ -85,10 +84,20 @@ def find_enemy_speed(pos_mouse_x, pos_mouse_y, self_pos_x, self_pos_y):
     return speed_x, speed_y
 
 
+class Check(sprite.Sprite):
+    def __init__(self, x, y):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.Surface((BULLET_SIZE, BULLET_SIZE))
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+
+
 class Enemy(sprite.Sprite):
-    def __init__(self, x, y, bullet_group, all_sprites, hero):
+    def __init__(self, x, y, move_speed, bullet_group, all_sprites, hero):
         sprite.Sprite.__init__(self)
 
+        self.agr = False
         self.onGround = False  # На земле ли я?
 
         self.yvel = 0  # скорость вертикального перемещения
@@ -96,6 +105,8 @@ class Enemy(sprite.Sprite):
 
         self.startX = x  # Начальная позиция Х, пригодится когда будем переигрывать уровень
         self.startY = y
+
+        self.move_speed = move_speed
 
         self.image = Surface((ENEMY_WIDTH, ENEMY_HEIGHT))
         self.image.fill(Color(COLOR))
@@ -113,19 +124,26 @@ class Enemy(sprite.Sprite):
 
         self.start_timer = 0
 
-        self.left = False
-        self.right = False
+        self.left = random.choice([True, False])
+        self.right = random.choice([True, False])
+        if self.left == self.right:
+            self.left = False
+            self.right = False
         self.up = False
 
     def update(self, platforms):
 
         self.II(self.hero.rect.centerx, self.hero.rect.centery, platforms, self.hero)
 
+        if self.right == self.left:
+            self.right = False
+            self.left = False
+
         if self.left:
-            self.xvel = -ENEMY_MOVE_SPEED  # Лево = x- n
+            self.xvel = -self.move_speed  # Лево = x- n
 
         if self.right:
-            self.xvel = ENEMY_MOVE_SPEED  # Право = x + n
+            self.xvel = self.move_speed  # Право = x + n
 
         if not (self.left or self.right):  # стоим, когда нет указаний идти
             self.xvel = 0
@@ -150,9 +168,13 @@ class Enemy(sprite.Sprite):
 
                 if xvel > 0:  # если движется вправо
                     self.rect.right = p.rect.left  # то не движется вправо
+                    self.right = False
+                    self.left = True
 
                 if xvel < 0:  # если движется влево
                     self.rect.left = p.rect.right  # то не движется влево
+                    self.left = False
+                    self.right = True
 
                 if yvel > 0:  # если падает вниз
                     self.rect.bottom = p.rect.top  # то не падает вниз
@@ -164,17 +186,57 @@ class Enemy(sprite.Sprite):
                     self.yvel = 0  # и энергия прыжка пропадает
 
     def II(self, hero_pos_x, hero_pos_y, platforms, hero):
+        fall_left = True
+        fall_right = True
+        hero_left = False
+        hero_right = False
+
         r = 500
         if (hero.rect.centerx - self.rect.centerx) ** 2 + (hero.rect.centery - self.rect.centery) ** 2 <= r * r:
+            self.agr = True
             if pygame.time.get_ticks() - self.start_timer > random.randrange(300, 1200):
                 self.shoot(self.bullets_group, self.all_sprites, hero_pos_x, hero_pos_y)
                 self.start_timer = pygame.time.get_ticks()
+            if self.rect.centerx > hero_pos_x:
+                self.right = False
+                self.left = True
+                hero_left = True
+            else:
+                self.right = True
+                self.left = False
+                hero_right = True
+
+        for p in platforms:
+            checkpoint = Check(self.rect.right, self.rect.bottom + 10)
+
+            if sprite.collide_rect(checkpoint, p):
+                fall_right = False
+
+            checkpoint.rect.x = self.rect.left
+
+            if sprite.collide_rect(checkpoint, p):
+                fall_left = False
+
+            checkpoint.kill()
+        if self.agr and fall_left and hero_left:
+            self.right = False
+            self.left = False
+        elif self.agr and fall_right and hero_right:
+            self.right = False
+            self.left = False
+        elif fall_right and self.agr is False:
+            self.right = False
+            self.left = True
+        elif fall_left and self.agr is False:
+            self.right = True
+            self.left = False
+        self.agr = False
 
     def shoot(self, bullets_group, all_sprites, pos_mouse_x, pos_mouse_y):
 
         speed_x, speed_y = find_enemy_speed(pos_mouse_x, pos_mouse_y, self.rect.centerx, self.rect.centery)
 
         bullet = EnemyBullet(self.rect.centerx - (BULLET_SIZE // 2),
-                        self.rect.centery - (BULLET_SIZE // 2), speed_x, speed_y, self.hero)
+                             self.rect.centery - (BULLET_SIZE // 2), speed_x, speed_y, self.hero)
         bullets_group.add(bullet)
         all_sprites.add(bullet)

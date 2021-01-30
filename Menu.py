@@ -43,7 +43,7 @@ def menu_pause(screen, screenshot):
     new_serf = blurSurf(blur_surf, 20)
     screen.blit(new_serf, (0, 110))
 
-    pygame.draw.line(screen, (206, 48, 39), [0, 110], [width, 110], 3)
+    pygame.draw.line(screen, (78, 37, 245), [0, 110], [width, 110], 3)
 
     # image = pygame.image.load('data/pause_gradient.png').convert_alpha()
     # screen.blit(image, (0, 0))
@@ -60,8 +60,8 @@ def menu_pause(screen, screenshot):
 
     write(screen, pause_text[0], width // 2 - 100, 55, (255, 255, 255), 100)
 
-    create_button(screen, (200, 50), (206, 48, 39), (160, 30))
+    create_button(screen, (200, 50), (78, 37, 245), (160, 30))
     write(screen, pause_text[1], 182, 55, (255, 255, 255), 50)
 
-    create_button(screen, (100, 50), (206, 48, 39), (30, 30))
+    create_button(screen, (100, 50), (78, 37, 245), (30, 30))
     write(screen, pause_text[2], 43, 55, (255, 255, 255), 50)
