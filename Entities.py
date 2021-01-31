@@ -12,8 +12,8 @@ JUMP_POWER = 10
 GRAVITY = 0.35  # Сила, которая будет тянуть нас вниз
 
 HERO_MOVE_SPEED = 7
-HERO_WIDTH = 20
-HERO_HEIGHT = 50
+HERO_WIDTH = 25
+HERO_HEIGHT = 75
 HERO_HP = 100
 
 BULLET_SIZE = 10
@@ -46,6 +46,7 @@ class Bullet(sprite.Sprite):
         for en in enemies_group:
             if sprite.collide_rect(self, en):
                 en.heals_points -= self.damage
+                en.agr = True
                 self.kill()
 
     def update_bullet(self, platforms, enemies_group):
@@ -125,12 +126,37 @@ class Player(sprite.Sprite):
         self.rect = Rect(x, y, HERO_WIDTH, HERO_HEIGHT)
         self.pos = (self.rect.x, self.rect.y)
 
-        self.bullet_speed = 20
+        self.bullet_speed = BULLET_SPEED
 
     def update(self, left, right, up, platforms, screen):
 
-        self.hp_line = pygame.Rect(WIN_WIDTH // 2 - 200, 20, 400, 10)
-        pygame.draw.rect(screen, 'blue', self.hp_line, 3, 0, 0, 0, 0, 0)
+        hp_width = 600
+        hp_height = 15
+
+        hp_y = -5
+
+        green = (36, 255, 72)
+        yellow = (255, 227, 46)
+        orange = (255, 122, 20)
+        red = (255, 64, 64)
+        cur_color = None
+
+        cur_width = self.heals_points / 100 * hp_width
+        percent = cur_width / hp_width * 100
+        if percent >= 75.0:
+            cur_color = green
+        elif 45.0 <= percent < 75.0:
+            cur_color = yellow
+        elif 20.0 <= percent < 45.0:
+            cur_color = orange
+        elif percent < 20.0:
+            cur_color = red
+
+        hp = pygame.Rect(WIN_WIDTH // 2 - hp_width // 2, hp_y, cur_width, hp_height)
+        pygame.draw.rect(screen, cur_color, hp)
+
+        # hp_line = pygame.Rect(WIN_WIDTH // 2 - hp_width // 2, hp_y, hp_width, hp_height)
+        # pygame.draw.rect(screen, cur_color, hp_line, 1, 0, 0, 0, 0, 0)
 
         if left:
             self.xvel = -HERO_MOVE_SPEED  # Лево = x- n

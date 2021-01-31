@@ -146,6 +146,14 @@ class Enemy(sprite.Sprite):
 
     def update(self, platforms):
 
+        if self.agr:
+            if self.rect.centerx > self.hero.rect.centerx:
+                self.left = True
+                self.right = False
+            elif self.rect.centerx < self.hero.rect.centerx:
+                self.right = True
+                self.left = False
+
         if self.heals_points <= 0:
             self.kill()
 
@@ -214,12 +222,12 @@ class Enemy(sprite.Sprite):
             if pygame.time.get_ticks() - self.start_timer > random.randrange(300, 1200):
                 self.shoot(self.bullets_group, self.all_sprites, hero_pos_x, hero_pos_y)
                 self.start_timer = pygame.time.get_ticks()
-            if self.rect.centerx > hero_pos_x:
+            if self.rect.centerx - hero_pos_x > 10:
                 self.right = False
                 self.left = True
                 hero_left = True
                 hero_right = False
-            elif self.rect.centerx < hero_pos_x:
+            elif self.rect.centerx - hero_pos_x < -10:
                 self.right = True
                 self.left = False
                 hero_right = True

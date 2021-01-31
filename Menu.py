@@ -38,10 +38,10 @@ def menu_pause(screen, screenshot):
     half_w = width // 2
     pause_text = ["Pause", "Continue", "Quit"]
 
-    blur_surf = Surface((width, height - 110), pygame.SRCALPHA)
-    blur_surf.blit(screenshot, (0, -110))
+    blur_surf = Surface((width, height), pygame.SRCALPHA)
+    blur_surf.blit(screenshot, (0, 0))
     new_serf = blurSurf(blur_surf, 20)
-    screen.blit(new_serf, (0, 110))
+    screen.blit(new_serf, (0, 0))
 
     pygame.draw.line(screen, (78, 37, 245), [0, 110], [width, 110], 3)
 
@@ -57,8 +57,6 @@ def menu_pause(screen, screenshot):
     shoot = pygame.transform.scale(shoot, (110, 80))
     screen.blit(shoot, (width - 230, height - 100))
     write(screen, '- shoot', width - 130, height - 50, (255, 255, 255), 50)
-
-    write(screen, pause_text[0], width // 2 - 100, 55, (255, 255, 255), 100)
 
     create_button(screen, (200, 50), (78, 37, 245), (160, 30))
     write(screen, pause_text[1], 182, 55, (255, 255, 255), 50)
