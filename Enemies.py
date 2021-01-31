@@ -135,13 +135,12 @@ class Enemy(sprite.Sprite):
 
         self.shoot_pass = True
 
+        self.hero_near = False
+
         self.start_timer = 0
 
-        self.left = random.choice([True, False])
-        self.right = random.choice([True, False])
-        if self.left == self.right:
-            self.left = False
-            self.right = False
+        self.left = False
+        self.right = False
         self.up = False
 
     def update(self, platforms):
@@ -157,7 +156,25 @@ class Enemy(sprite.Sprite):
         if self.heals_points <= 0:
             self.kill()
 
-        self.intelligence(self.hero.rect.centerx, self.hero.rect.centery, platforms, self.hero)
+        if abs(self.rect.centerx - self.hero.rect.centerx) < 900\
+                and abs(self.rect.centery - self.hero.rect.centery) < 900:
+
+            if self.left == self.right:
+                self.left = random.choice([True, False])
+                self.right = random.choice([True, False])
+                if self.left == self.right:
+                    self.left = False
+                    self.right = False
+
+            self.hero_near = True
+        else:
+            self.left = False
+            self.right = False
+
+            self.hero_near = False
+
+        if self.hero_near:
+            self.intelligence(self.hero.rect.centerx, self.hero.rect.centery, platforms, self.hero)
 
         if self.right == self.left:
             self.right = False
@@ -217,7 +234,7 @@ class Enemy(sprite.Sprite):
         hero_here = False
 
         r = 500
-        if (hero.rect.centerx - self.rect.centerx) ** 2 + (hero.rect.centery - self.rect.centery) ** 2 <= r * r:
+        if (hero_pos_x - self.rect.centerx) ** 2 + (hero_pos_y - self.rect.centery) ** 2 <= r * r:
             self.agr = True
             if pygame.time.get_ticks() - self.start_timer > random.randrange(300, 1200):
                 self.shoot(self.bullets_group, self.all_sprites, hero_pos_x, hero_pos_y)

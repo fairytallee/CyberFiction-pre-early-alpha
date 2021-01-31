@@ -144,7 +144,7 @@ PLATFORM_COLOR = "black"
 BACKGROUND_COLOR = "white"
 
 tile_images = {
-    'wall': load_image('textures/metal1.png')
+    'wall': load_image('textures/street/metal/metal_durt_left.jpg')
 }
 
 bg_menu = load_image('main_menu/scr_for_menu.jpg')
