@@ -128,7 +128,7 @@ class Player(sprite.Sprite):
 
         self.bullet_speed = BULLET_SPEED
 
-    def update(self, left, right, up, platforms, screen):
+    def update(self, left, right, up, platforms, screen, state):
 
         hp_width = 600
         hp_height = 15
@@ -182,7 +182,7 @@ class Player(sprite.Sprite):
         self.collide(self.xvel, 0, platforms)
 
         if self.heals_points <= 0:
-            pygame.quit()
+            state = 0
 
     def collide(self, xvel, yvel, platforms):
         for p in platforms:

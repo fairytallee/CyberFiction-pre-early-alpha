@@ -20,7 +20,7 @@ screen.fill((0, 0, 0, 0))
 
 
 def load_image(name, colorkey=None):
-    fullname = os.path.join('data', name)
+    fullname = os.path.join('data/', name)
     try:
         image = pygame.image.load(fullname)
     except pygame.error as message:
@@ -144,15 +144,17 @@ PLATFORM_COLOR = "black"
 BACKGROUND_COLOR = "white"
 
 tile_images = {
-    'wall': load_image('metal1.png')
+    'wall': load_image('textures/metal1.png')
 }
+
+bg_menu = load_image('main_menu/scr_for_menu.jpg')
 
 tiles_group = SpriteGroup()
 all_sprites = SpriteGroup()
 entity_group = SpriteGroup()
 bullets_group = SpriteGroup()
 
-level_map = load_level('map.map')
+level_map = load_level('levels/map.map')
 
 hero, enemy_group, max_x, max_y = generate_level(level_map)
 entity_group.add(hero)
@@ -173,13 +175,15 @@ camera.update(hero)
 
 screen2 = Surface(size, pygame.SRCALPHA)
 
+PLAY_MENU_MUS = False
+
 
 def main():
-    global left, right, up, hero, enemy, screenshot
+    global left, right, up, hero, enemy, screenshot, PLAY_MENU_MUS
     pygame.display.set_caption("test")
 
-    running, pause, process = 1, 0, True
-    state = running
+    running, pause, menu, process = 1, 2, 0, True
+    state = menu
 
     while process:  # Основной цикл программы
         if state == running:
@@ -235,7 +239,7 @@ def main():
                 hero.heals_points -= 100
                 # process = False
 
-            hero.update(left, right, up, tiles_group, screen)
+            hero.update(left, right, up, tiles_group, screen, state)
             for e in enemy_group:
                 e.update(tiles_group)
 
@@ -245,12 +249,13 @@ def main():
             for event in pygame.event.get():  # Обрабатываем события
                 if event.type == QUIT:
                     process = False
-                if event.type == MOUSEBUTTONDOWN and 160 < event.pos[0] < 360 and \
+
+                if event.type == MOUSEBUTTONDOWN and 30 < event.pos[0] < 280 and \
+                        30 < event.pos[1] < 80:
+                    state = menu
+                if event.type == MOUSEBUTTONDOWN and 280 < event.pos[0] < 480 and \
                         30 < event.pos[1] < 80:
                     state = running
-                if event.type == MOUSEBUTTONDOWN and 30 < event.pos[0] < 130 and \
-                        30 < event.pos[1] < 80:
-                    process = False
 
             screen.blit(screenshot, (0, 0))
             Menu.menu_pause(screen2, screenshot)
@@ -258,15 +263,29 @@ def main():
             screen.blit(screen2, (0, 0))
             screen2.fill((0, 0, 0, 0))
 
-        # # elif state == pause:
-        # #     for event in pygame.event.get():  # Обрабатываем события
-        # #         if event.type == QUIT:
-        # #             process = False
-        # #         if event.type == KEYDOWN and event.key == K_SPACE:
-        # #             state = running
-        # #             # screen.fill('black')
-        #
-        #     menu_pause(screen)
+        elif state == menu:
+            if PLAY_MENU_MUS is False:
+                pygame.mixer.music.load('data/music/main_menu_cur.mp3')
+                pygame.mixer.music.set_volume(0.15)
+                pygame.mixer.music.play(-1)
+                PLAY_MENU_MUS = True
+
+            screen.fill('black')
+            for event in pygame.event.get():  # Обрабатываем события
+                if event.type == QUIT:
+                    process = False
+
+                if event.type == MOUSEBUTTONDOWN and 200 < event.pos[0] < 500 and \
+                        400 < event.pos[1] < 450:
+                    state = running
+                    pygame.mixer.music.stop()
+                    PLAY_MENU_MUS = False
+
+                if event.type == MOUSEBUTTONDOWN and 200 < event.pos[0] < 500 and \
+                        520 < event.pos[1] < 570:
+                    process = False
+
+            Menu.main_menu(screen, bg_menu)
 
         clock.tick(FPS)
         pygame.display.flip()

@@ -1,7 +1,7 @@
 import pygame
 from pygame import Surface
 import pyautogui
-width, height = pyautogui.size()[0], pyautogui.size()[1]
+WIN_WIDTH, WIN_HEIGHT = pyautogui.size()[0], pyautogui.size()[1]
 
 
 def write(screen, text, pos_x, pos_y, color, size):
@@ -14,7 +14,7 @@ def write(screen, text, pos_x, pos_y, color, size):
 
 def create_button(screen, size, color, pos):
     new_button = pygame.Rect(pos[0], pos[1], size[0], size[1])
-    pygame.draw.rect(screen, color, new_button, 3, 0, 20, 0, 0, 20)
+    pygame.draw.rect(screen, color, new_button, 3)
 
 
 def blurSurf(surface, amt):
@@ -33,33 +33,69 @@ def blurSurf(surface, amt):
 
 
 def menu_pause(screen, screenshot):
-    global width, height
 
-    half_w = width // 2
-    pause_text = ["Pause", "Continue", "Quit"]
+    half_w = WIN_WIDTH // 2
+    pause_text = ["Pause", "Continue", "Quit to menu"]
 
-    blur_surf = Surface((width, height), pygame.SRCALPHA)
+    blur_surf = Surface((WIN_WIDTH, WIN_HEIGHT), pygame.SRCALPHA)
     blur_surf.blit(screenshot, (0, 0))
     new_serf = blurSurf(blur_surf, 20)
     screen.blit(new_serf, (0, 0))
 
-    pygame.draw.line(screen, (78, 37, 245), [0, 110], [width, 110], 3)
+    pygame.draw.line(screen, (78, 37, 245), [0, 110], [WIN_WIDTH, 110], 3)
 
     # image = pygame.image.load('data/pause_gradient.png').convert_alpha()
     # screen.blit(image, (0, 0))
 
-    wasd = pygame.image.load('data/wasd.png').convert_alpha()
+    wasd = pygame.image.load('data/pause/wasd.png').convert_alpha()
     wasd = pygame.transform.scale(wasd, (100, 100))
-    screen.blit(wasd, (width - 450, height - 100))
-    write(screen, '- move', width - 330, height - 50, (255, 255, 255), 50)
+    screen.blit(wasd, (WIN_WIDTH - 450, WIN_HEIGHT - 100))
+    write(screen, '- move', WIN_WIDTH - 330, WIN_HEIGHT - 50, (255, 255, 255), 50)
 
-    shoot = pygame.image.load('data/лкм.png').convert_alpha()
+    shoot = pygame.image.load('data/pause/лкм.png').convert_alpha()
     shoot = pygame.transform.scale(shoot, (110, 80))
-    screen.blit(shoot, (width - 230, height - 100))
-    write(screen, '- shoot', width - 130, height - 50, (255, 255, 255), 50)
+    screen.blit(shoot, (WIN_WIDTH - 230, WIN_HEIGHT - 100))
+    write(screen, '- shoot', WIN_WIDTH - 130, WIN_HEIGHT - 50, (255, 255, 255), 50)
 
-    create_button(screen, (200, 50), (78, 37, 245), (160, 30))
-    write(screen, pause_text[1], 182, 55, (255, 255, 255), 50)
+    pos_x = 30
 
-    create_button(screen, (100, 50), (78, 37, 245), (30, 30))
+    create_button(screen, (250, 50), (78, 37, 245), (pos_x, 30))
     write(screen, pause_text[2], 43, 55, (255, 255, 255), 50)
+
+    pos_x += 260
+
+    create_button(screen, (200, 50), (78, 37, 245), (pos_x, 30))
+    write(screen, pause_text[1], pos_x + 22, 55, (255, 255, 255), 50)
+
+
+def main_menu(screen, bg):
+    # blur_surf = Surface((WIN_WIDTH, WIN_HEIGHT), pygame.SRCALPHA)
+    # blur_surf.blit(bg, (0, 0))
+    # new_serf = blurSurf(blur_surf, 200)
+    # screen.blit(new_serf, (0, 0))
+
+    main_serf_width = 500
+    main_serf_height = 100
+
+    menu_text = ['New game', 'Load', 'Quit', 'v1.36']
+
+    pos_x = 200
+    pos_y = 400
+    create_button(screen, (300, 50), (78, 37, 245), (pos_x, pos_y))
+    write(screen, menu_text[0], pos_x + 13, pos_y + 27, (78, 37, 245), 50)
+
+    pos_y += 60
+    create_button(screen, (300, 50), (78, 37, 245), (pos_x, pos_y))
+    write(screen, menu_text[1], pos_x + 13, pos_y + 27, (78, 37, 245), 50)
+
+    pos_y += 60
+    create_button(screen, (300, 50), (78, 37, 245), (pos_x, pos_y))
+    write(screen, menu_text[2], pos_x + 13, pos_y + 27, (78, 37, 245), 50)
+
+    write(screen, menu_text[3], pos_x + 10, pos_y + 220, (78, 37, 245), 30)
+
+
+
+
+
+
