@@ -149,7 +149,7 @@ class Enemy(sprite.Sprite):
         if self.heals_points <= 0:
             self.kill()
 
-        self.II(self.hero.rect.centerx, self.hero.rect.centery, platforms, self.hero)
+        self.intelligence(self.hero.rect.centerx, self.hero.rect.centery, platforms, self.hero)
 
         if self.right == self.left:
             self.right = False
@@ -201,11 +201,12 @@ class Enemy(sprite.Sprite):
                     self.rect.top = p.rect.bottom  # то не движется вверх
                     self.yvel = 0  # и энергия прыжка пропадает
 
-    def II(self, hero_pos_x, hero_pos_y, platforms, hero):
+    def intelligence(self, hero_pos_x, hero_pos_y, platforms, hero):
         fall_left = True
         fall_right = True
         hero_left = False
         hero_right = False
+        hero_here = False
 
         r = 500
         if (hero.rect.centerx - self.rect.centerx) ** 2 + (hero.rect.centery - self.rect.centery) ** 2 <= r * r:
@@ -217,10 +218,16 @@ class Enemy(sprite.Sprite):
                 self.right = False
                 self.left = True
                 hero_left = True
-            else:
+                hero_right = False
+            elif self.rect.centerx < hero_pos_x:
                 self.right = True
                 self.left = False
                 hero_right = True
+                hero_left = False
+            else:
+                self.right = False
+                self.left = False
+                hero_here = True
 
         for p in platforms:
             checkpoint = Check(self.rect.right, self.rect.bottom + 10)
@@ -246,6 +253,9 @@ class Enemy(sprite.Sprite):
         elif fall_left and self.agr is False:
             self.right = True
             self.left = False
+        elif hero_here:
+            self.left = False
+            self.right = False
         self.agr = False
 
     def shoot(self, bullets_group, all_sprites, pos_mouse_x, pos_mouse_y):
