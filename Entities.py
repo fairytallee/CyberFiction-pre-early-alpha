@@ -182,7 +182,7 @@ class Player(sprite.Sprite):
         self.collide(self.xvel, 0, platforms)
 
         if self.heals_points <= 0:
-            state = 0
+            state = False
 
     def collide(self, xvel, yvel, platforms):
         for p in platforms:
