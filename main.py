@@ -238,7 +238,8 @@ def main():
             if hits:
                 process = False
 
-            hero.update(left, right, up, tiles_group, screen, process)
+            hero.update(left, right, up, tiles_group, screen)
+
             for e in enemy_group:
                 e.update(tiles_group)
 
