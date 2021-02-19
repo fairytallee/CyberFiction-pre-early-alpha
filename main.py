@@ -35,7 +35,7 @@ def load_image(name, colorkey=None):
 
 
 def load_level(filename):
-    filename = "data/" + filename
+    filename = "data/levels/" + filename
     # читаем уровень, убирая символы перевода строки
     with open(filename, 'r') as mapFile:
         level_map = [line.strip() for line in mapFile]
@@ -76,11 +76,20 @@ class Tile(Sprite):
         self.abs_pos = (self.rect.x, self.rect.y)
 
 
+class Portal(Sprite):
+    def __init__(self, tile_type, pos_x, pos_y):
+        super().__init__(entity_group, all_sprites)
+        self.image = tile_images[tile_type]
+        self.rect = self.image.get_rect().move(PLATFORM_WIDTH * pos_x, PLATFORM_HEIGHT * pos_y)
+        self.abs_pos = (self.rect.x, self.rect.y)
+
+
 tiles_group = SpriteGroup()
 all_sprites = SpriteGroup()
 entity_group = SpriteGroup()
 enemy_group = SpriteGroup()
 bullets_group = SpriteGroup()
+portals = SpriteGroup()
 
 
 def generate_level(level):
@@ -93,11 +102,15 @@ def generate_level(level):
                 pass
             elif level[y][x] == '#':
                 Tile('wall', x, y)
+            elif level[y][x] == 'p':
+                portal = Portal('portal', x, y)
+                portals.add(portal)
             elif level[y][x] == '@':
                 new_player = Player(PLATFORM_WIDTH * x + PLATFORM_WIDTH // 2, PLATFORM_HEIGHT * y)
                 ll = list(level[y])
                 ll[x] = '.'
                 level[y] = ll
+                all_sprites.add(new_player)
             elif level[y][x] == 'e':
                 new_enemy = Enemy(PLATFORM_WIDTH * x, PLATFORM_HEIGHT * y, random.randrange(2, 5), bullets_group, all_sprites, None)
                 enemy_group.add(new_enemy)
@@ -144,46 +157,47 @@ PLATFORM_COLOR = "black"
 BACKGROUND_COLOR = "white"
 
 tile_images = {
-    'wall': load_image('textures/street/metal/metal_durt_left.jpg')
+    'wall': load_image('textures/metal_durt_left.jpg'),
+    'portal': load_image('textures/portal.png')
 }
 
+levels = {
+    '1': load_level('map.map'),
+    '2': load_level('second.map')
+}
 bg_menu = load_image('main_menu/scr_for_menu.jpg')
-
-tiles_group = SpriteGroup()
-all_sprites = SpriteGroup()
-entity_group = SpriteGroup()
-bullets_group = SpriteGroup()
-
-level_map = load_level('levels/map.map')
-
-hero, enemy_group, max_x, max_y = generate_level(level_map)
-entity_group.add(hero)
-for spr in enemy_group:
-    entity_group.add(spr)
-
-total_level_width = (max_x + 1) * PLATFORM_WIDTH  # Высчитываем фактическую ширину уровня
-total_level_height = (max_y + 1) * PLATFORM_HEIGHT  # высоту
-
-camera = Camera(camera_configure, total_level_width, total_level_height)
-
-clock = pygame.time.Clock()
-left = False
-right = False
-up = False
-
-camera.update(hero)
-
-screen2 = Surface(size, pygame.SRCALPHA)
-
-PLAY_MENU_MUS = False
 
 
 def main():
     global left, right, up, hero, enemy, screenshot, PLAY_MENU_MUS
+
+    level = 1
+
     pygame.display.set_caption("test")
 
     running, pause, menu, process = 1, 2, 0, True
     state = menu
+
+    hero, enemy_group, max_x, max_y = generate_level(levels[str(level)])
+    entity_group.add(hero)
+    for spr in enemy_group:
+        entity_group.add(spr)
+
+    total_level_width = (max_x + 1) * PLATFORM_WIDTH  # Высчитываем фактическую ширину уровня
+    total_level_height = (max_y + 1) * PLATFORM_HEIGHT  # высоту
+
+    camera = Camera(camera_configure, total_level_width, total_level_height)
+
+    clock = pygame.time.Clock()
+    left = False
+    right = False
+    up = False
+
+    camera.update(hero)
+
+    screen2 = Surface(size, pygame.SRCALPHA)
+
+    PLAY_MENU_MUS = False
 
     while process:  # Основной цикл программы
         if state == running:
@@ -234,6 +248,11 @@ def main():
                     bul.update_bullet(tiles_group)
                 elif isinstance(bul, Bullet):
                     bul.update_bullet(tiles_group, enemy_group)
+            if sprite.spritecollide(hero, portals, False):
+                for i in all_sprites:
+                    i.kill()
+                level += 1
+                hero, enemy_group, max_x, max_y = generate_level(levels[str(level)])
             hits = sprite.spritecollide(hero, enemy_group, False)
             if hits:
                 process = False
