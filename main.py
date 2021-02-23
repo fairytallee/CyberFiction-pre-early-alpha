@@ -84,12 +84,22 @@ class Portal(Sprite):
         self.abs_pos = (self.rect.x, self.rect.y)
 
 
+class Beer(Sprite):
+    def __init__(self, tile_type, pos_x, pos_y):
+        super().__init__(entity_group, all_sprites)
+        self.image = tile_images[tile_type]
+        self.rect = self.image.get_rect().move(PLATFORM_WIDTH * pos_x, PLATFORM_HEIGHT * pos_y)
+        self.abs_pos = (self.rect.x, self.rect.y)
+
+
 tiles_group = SpriteGroup()
 all_sprites = SpriteGroup()
 entity_group = SpriteGroup()
 enemy_group = SpriteGroup()
 bullets_group = SpriteGroup()
 portals = SpriteGroup()
+beer_group = SpriteGroup()
+
 
 
 def generate_level(level):
@@ -105,6 +115,9 @@ def generate_level(level):
             elif level[y][x] == 'p':
                 portal = Portal('portal', x, y)
                 portals.add(portal)
+            elif level[y][x] == 'b':
+                beer = Beer('beer', x, y)
+                beer_group.add(beer)
             elif level[y][x] == '@':
                 new_player = Player(PLATFORM_WIDTH * x + PLATFORM_WIDTH // 2, PLATFORM_HEIGHT * y)
                 ll = list(level[y])
@@ -155,10 +168,13 @@ PLATFORM_WIDTH = 80
 PLATFORM_HEIGHT = 80
 PLATFORM_COLOR = "black"
 BACKGROUND_COLOR = "white"
+extra_speed = 0
+count = 0
 
 tile_images = {
     'wall': load_image('textures/metal_durt_left.jpg'),
-    'portal': load_image('textures/portal.png')
+    'portal': load_image('textures/portal.png'),
+    'beer': load_image('textures/beer.png')
 }
 
 levels = {
@@ -169,7 +185,7 @@ bg_menu = load_image('main_menu/scr_for_menu.jpg')
 
 
 def main():
-    global left, right, up, hero, enemy, screenshot, PLAY_MENU_MUS
+    global left, right, up, hero, enemy, screenshot, PLAY_MENU_MUS, extra_speed, count
 
     level = 1
 
@@ -253,11 +269,13 @@ def main():
                     i.kill()
                 level += 1
                 hero, enemy_group, max_x, max_y = generate_level(levels[str(level)])
+            if sprite.spritecollide(hero, beer_group, True):
+                extra_speed = 5
             hits = sprite.spritecollide(hero, enemy_group, False)
             if hits:
                 process = False
 
-            hero.update(left, right, up, tiles_group, screen)
+            hero.update(left, right, up, tiles_group, screen, extra_speed)
 
             for e in enemy_group:
                 e.update(tiles_group)

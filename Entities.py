@@ -128,7 +128,7 @@ class Player(sprite.Sprite):
 
         self.bullet_speed = BULLET_SPEED
 
-    def update(self, left, right, up, platforms, screen):
+    def update(self, left, right, up, platforms, screen, extra_speed):
         hp_width = 600
         hp_height = 15
 
@@ -158,10 +158,18 @@ class Player(sprite.Sprite):
         # pygame.draw.rect(screen, cur_color, hp_line, 1, 0, 0, 0, 0, 0)
 
         if left:
-            self.xvel = -HERO_MOVE_SPEED  # Лево = x- n
+            start = pygame.time.Clock()
+            if pygame.time.get_ticks() - start.get_time() < 5000:
+                self.xvel = -HERO_MOVE_SPEED - extra_speed  # Лево = x- n
+            else:
+                self.xvel = -HERO_MOVE_SPEED
 
         if right:
-            self.xvel = HERO_MOVE_SPEED  # Право = x + n
+            start = pygame.time.Clock()
+            if pygame.time.get_ticks() - start.get_time() < 5000:
+                self.xvel = HERO_MOVE_SPEED + extra_speed  # Лево = x- n
+            else:
+                self.xvel = HERO_MOVE_SPEED
 
         if not (left or right):  # стоим, когда нет указаний идти
             self.xvel = 0
