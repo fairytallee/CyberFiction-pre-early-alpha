@@ -1,7 +1,6 @@
 import pygame
 from pygame import *
 import math
-import time
 import pyautogui
 
 # WIN_WIDTH, WIN_HEIGHT = 700, 700
@@ -128,7 +127,7 @@ class Player(sprite.Sprite):
 
         self.bullet_speed = BULLET_SPEED
 
-    def update(self, left, right, up, platforms, screen, extra_speed):
+    def update(self, left, right, up, platforms, screen, extra_speed=0):
         hp_width = 600
         hp_height = 15
 

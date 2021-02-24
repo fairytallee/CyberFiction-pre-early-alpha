@@ -7,6 +7,7 @@ from Enemies import Enemy, EnemyBullet
 import Menu
 import pyautogui
 import random
+import pyganim
 
 # WIN_WIDTH, WIN_HEIGHT = 700, 700
 # WIN_WIDTH, WIN_HEIGHT = 1920, 1080
