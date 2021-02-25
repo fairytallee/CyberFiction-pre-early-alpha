@@ -1,7 +1,11 @@
 import pygame
 from pygame import *
 import math
+from Animations import AnimatedSprite
 import pyautogui
+import os
+import pyganim
+
 
 # WIN_WIDTH, WIN_HEIGHT = 700, 700
 # WIN_WIDTH, WIN_HEIGHT = 1920, 1080
@@ -11,8 +15,8 @@ JUMP_POWER = 10
 GRAVITY = 0.35  # Сила, которая будет тянуть нас вниз
 
 HERO_MOVE_SPEED = 7
-HERO_WIDTH = 25
-HERO_HEIGHT = 75
+HERO_WIDTH = 80
+HERO_HEIGHT = 80
 HERO_HP = 100
 
 BULLET_SIZE = 10
@@ -20,6 +24,19 @@ BULLET_SPEED = 20
 BULLET_DAMAGE = 10
 
 COLOR = "white"
+
+ANIMATION_DELAY = 100 # скорость смены кадров
+ANIMATION_RIGHT = ['data/animations/hero/run1.png', 'data/animations/hero/run2.png', 'data/animations/hero/run3.png',
+                   'data/animations/hero/run4.png', 'data/animations/hero/run5.png', 'data/animations/hero/run6.png']
+
+ANIMATION_LEFT = ['data/animations/hero/run_l1.png', 'data/animations/hero/run_l2.png',
+                  'data/animations/hero/run_l3.png', 'data/animations/hero/run_l4.png',
+                  'data/animations/hero/run_l5.png', 'data/animations/hero/run_l6.png']
+
+ANIMATION_JUMP_LEFT = [('data/animations/hero/run_l2.png', 100)]
+ANIMATION_JUMP_RIGHT = [('data/animations/hero/run2.png', 100)]
+ANIMATION_JUMP = [('data/animations/hero/run2.png', 100)]
+ANIMATION_STAY = [('data/animations/hero/run1.png', 100)]
 
 
 class Bullet(sprite.Sprite):
@@ -106,8 +123,23 @@ def find_speed(pos_mouse_x, pos_mouse_y):
     return speed_x, speed_y
 
 
+def load_image(name, colorkey=None):
+    fullname = os.path.join('data/', name)
+    try:
+        image = pygame.image.load(fullname)
+    except pygame.error as message:
+        print('Не удается загрузить:', name)
+        raise SystemExit(message)
+    image = image.convert_alpha()
+    if colorkey is not None:
+        if colorkey == -1:
+            colorkey = image.get_at((0, 0))
+        image.set_colorkey(colorkey)
+    return image
+
+
 class Player(sprite.Sprite):
-    def __init__(self, x, y):
+    def __init__(self, x, y, all_sprites):
         sprite.Sprite.__init__(self)
 
         self.onGround = False  # На земле ли я?
@@ -126,6 +158,34 @@ class Player(sprite.Sprite):
         self.pos = (self.rect.x, self.rect.y)
 
         self.bullet_speed = BULLET_SPEED
+
+        self.image.set_colorkey('#888888')  # делаем фон прозрачным
+        #        Анимация движения вправо
+        boltAnim = []
+        for anim in ANIMATION_RIGHT:
+            boltAnim.append((anim, ANIMATION_DELAY))
+        self.boltAnimRight = pyganim.PygAnimation(boltAnim)
+        self.boltAnimRight.play()
+        #        Анимация движения влево
+        boltAnim = []
+        for anim in ANIMATION_LEFT:
+            boltAnim.append((anim, ANIMATION_DELAY))
+
+        self.boltAnimLeft = pyganim.PygAnimation(boltAnim)
+        self.boltAnimLeft.play()
+
+        self.boltAnimStay = pyganim.PygAnimation(ANIMATION_STAY)
+        self.boltAnimStay.play()
+        self.boltAnimStay.blit(self.image, (0, 0))  # По-умолчанию, стоим
+
+        self.boltAnimJumpLeft = pyganim.PygAnimation(ANIMATION_JUMP_LEFT)
+        self.boltAnimJumpLeft.play()
+
+        self.boltAnimJumpRight = pyganim.PygAnimation(ANIMATION_JUMP_RIGHT)
+        self.boltAnimJumpRight.play()
+
+        self.boltAnimJump = pyganim.PygAnimation(ANIMATION_JUMP)
+        self.boltAnimJump.play()
 
     def update(self, left, right, up, platforms, screen, extra_speed=0):
         hp_width = 600
@@ -162,6 +222,11 @@ class Player(sprite.Sprite):
                 self.xvel = -HERO_MOVE_SPEED - extra_speed  # Лево = x- n
             else:
                 self.xvel = -HERO_MOVE_SPEED
+            self.image.fill('#888888')
+            if up:  # для прыжка влево есть отдельная анимация
+                self.boltAnimJumpLeft.blit(self.image, (0, 0))
+            else:
+                self.boltAnimLeft.blit(self.image, (0, 0))
 
         if right:
             start = pygame.time.Clock()
@@ -169,9 +234,17 @@ class Player(sprite.Sprite):
                 self.xvel = HERO_MOVE_SPEED + extra_speed  # Лево = x- n
             else:
                 self.xvel = HERO_MOVE_SPEED
+            self.image.fill('#888888')
+            if up:
+                self.boltAnimJumpRight.blit(self.image, (0, 0))
+            else:
+                self.boltAnimRight.blit(self.image, (0, 0))
 
         if not (left or right):  # стоим, когда нет указаний идти
             self.xvel = 0
+            if not up:
+                self.image.fill('#888888')
+                self.boltAnimStay.blit(self.image, (0, 0))
 
         if up:
             if self.onGround:  # прыгаем, только когда можем оттолкнуться от земли

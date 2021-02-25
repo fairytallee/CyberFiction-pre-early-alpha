@@ -4,6 +4,8 @@ from Entities import Bullet
 import math
 import random
 import pyautogui
+import pyganim
+
 
 # WIN_WIDTH, WIN_HEIGHT = 700, 700
 # WIN_WIDTH, WIN_HEIGHT = 1920, 1080
@@ -13,14 +15,24 @@ JUMP_POWER = 10
 GRAVITY = 0.35  # Сила, которая будет тянуть нас вниз
 
 ENEMY_MOVE_SPEED = random.randrange(3, 7)
-ENEMY_WIDTH = 30
-ENEMY_HEIGHT = 70
+ENEMY_WIDTH = 80
+ENEMY_HEIGHT = 80
 ENEMY_HP = 70
 
 COLOR = 'red'
 
 BULLET_SIZE = 10
 BULLET_SPEED = 17
+
+ANIMATION_DELAY = 150 # скорость смены кадров
+ANIMATION_RIGHT = ['data/animations/hero/run1.png', 'data/animations/hero/run2.png', 'data/animations/hero/run3.png',
+                   'data/animations/hero/run4.png', 'data/animations/hero/run5.png', 'data/animations/hero/run6.png']
+
+ANIMATION_LEFT = ['data/animations/hero/run_l1.png', 'data/animations/hero/run_l2.png',
+                  'data/animations/hero/run_l3.png', 'data/animations/hero/run_l4.png',
+                  'data/animations/hero/run_l5.png', 'data/animations/hero/run_l6.png']
+
+ANIMATION_STAY = [('data/animations/hero/run1.png', 150)]
 
 
 class EnemyBullet(Bullet):
@@ -120,7 +132,7 @@ class Enemy(sprite.Sprite):
         self.move_speed = move_speed
 
         self.image = Surface((ENEMY_WIDTH, ENEMY_HEIGHT))
-        self.image.fill(Color(COLOR))
+        self.image.set_colorkey('#888888')
         self.rect = Rect(x, y, ENEMY_WIDTH, ENEMY_HEIGHT)
         self.pos = (self.rect.x, self.rect.y)
 
@@ -142,6 +154,23 @@ class Enemy(sprite.Sprite):
         self.left = False
         self.right = False
         self.up = False
+
+        boltAnim = []
+        for anim in ANIMATION_RIGHT:
+            boltAnim.append((anim, ANIMATION_DELAY))
+        self.boltAnimRight = pyganim.PygAnimation(boltAnim)
+        self.boltAnimRight.play()
+        #        Анимация движения влево
+        boltAnim = []
+        for anim in ANIMATION_LEFT:
+            boltAnim.append((anim, ANIMATION_DELAY))
+
+        self.boltAnimLeft = pyganim.PygAnimation(boltAnim)
+        self.boltAnimLeft.play()
+
+        self.boltAnimStay = pyganim.PygAnimation(ANIMATION_STAY)
+        self.boltAnimStay.play()
+        self.boltAnimStay.blit(self.image, (0, 0))  # По-умолчанию, стоим
 
     def update(self, platforms):
 
@@ -179,15 +208,23 @@ class Enemy(sprite.Sprite):
         if self.right == self.left:
             self.right = False
             self.left = False
+            self.image.fill('#888888')
+            self.boltAnimStay.blit(self.image, (0, 0))
 
         if self.left:
-            self.xvel = -self.move_speed  # Лево = x- n
+            self.xvel = -self.move_speed # Лево = x- n
+            self.image.fill('#888888')
+            self.boltAnimLeft.blit(self.image, (0, 0))
 
         if self.right:
             self.xvel = self.move_speed  # Право = x + n
+            self.image.fill('#888888')
+            self.boltAnimRight.blit(self.image, (0, 0))
 
         if not (self.left or self.right):  # стоим, когда нет указаний идти
             self.xvel = 0
+            self.image.fill('#888888')
+            self.boltAnimStay.blit(self.image, (0, 0))
 
         if self.up:
             if self.onGround:  # прыгаем, только когда можем оттолкнуться от земли

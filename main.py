@@ -102,7 +102,6 @@ portals = SpriteGroup()
 beer_group = SpriteGroup()
 
 
-
 def generate_level(level):
     x = 0
     y = 0
@@ -120,7 +119,7 @@ def generate_level(level):
                 beer = Beer('beer', x, y)
                 beer_group.add(beer)
             elif level[y][x] == '@':
-                new_player = Player(PLATFORM_WIDTH * x + PLATFORM_WIDTH // 2, PLATFORM_HEIGHT * y)
+                new_player = Player(PLATFORM_WIDTH * x + PLATFORM_WIDTH // 2, PLATFORM_HEIGHT * y, all_sprites)
                 ll = list(level[y])
                 ll[x] = '.'
                 level[y] = ll
@@ -270,8 +269,10 @@ def main():
                     i.kill()
                 level += 1
                 hero, enemy_group, max_x, max_y = generate_level(levels[str(level)])
-            if sprite.spritecollide(hero, beer_group, True):
-                extra_speed = 5
+            for b in beer_group:
+                if sprite.spritecollide(hero, beer_group, True):
+                    extra_speed = 5
+                    b.kill()
             hits = sprite.spritecollide(hero, enemy_group, False)
             if hits:
                 process = False

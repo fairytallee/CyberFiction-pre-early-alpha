@@ -93,9 +93,3 @@ def main_menu(screen, bg):
     write(screen, menu_text[2], pos_x + 13, pos_y + 27, (78, 37, 245), 50)
 
     write(screen, menu_text[3], pos_x + 10, pos_y + 220, (78, 37, 245), 30)
-
-
-
-
-
-
