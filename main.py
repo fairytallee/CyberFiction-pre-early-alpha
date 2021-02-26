@@ -276,7 +276,7 @@ def main():
 
             for b in beer_group:
                 if sprite.collide_rect(hero, b):
-                    extra_speed = 5
+                    extra_speed = 8
                     start = pygame.time.get_ticks()
                     b.kill()
             hits = sprite.spritecollide(hero, enemy_group, False)
@@ -326,6 +326,13 @@ def main():
 
                 if event.type == MOUSEBUTTONDOWN and 200 < event.pos[0] < 500 and \
                         400 < event.pos[1] < 450:
+
+                    for i in all_sprites:
+                        i.kill()
+                    hero.kill()
+                    level = 1
+                    hero, enemy_group, max_x, max_y = generate_level(load_level('map.map'))
+
                     state = running
                     pygame.mixer.music.stop()
                     PLAY_MENU_MUS = False
