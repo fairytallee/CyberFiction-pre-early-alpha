@@ -118,6 +118,7 @@ def generate_level(level):
             elif level[y][x] == 'b':
                 beer = Beer('beer', x, y)
                 beer_group.add(beer)
+                all_sprites.add(beer)
             elif level[y][x] == '@':
                 new_player = Player(PLATFORM_WIDTH * x + PLATFORM_WIDTH // 2, PLATFORM_HEIGHT * y, all_sprites)
                 ll = list(level[y])
@@ -172,7 +173,7 @@ extra_speed = 0
 count = 0
 
 tile_images = {
-    'wall': load_image('textures/metal_durt_left.jpg'),
+    'wall': load_image('textures/street/metal/metal_durt_left.jpg'),
     'portal': load_image('textures/portal.png'),
     'beer': load_image('textures/beer.png')
 }
@@ -208,6 +209,8 @@ def main():
     left = False
     right = False
     up = False
+    extra_speed = 0
+    start = None
 
     camera.update(hero)
 
@@ -264,18 +267,25 @@ def main():
                     bul.update_bullet(tiles_group)
                 elif isinstance(bul, Bullet):
                     bul.update_bullet(tiles_group, enemy_group)
+
             if sprite.spritecollide(hero, portals, False):
                 for i in all_sprites:
                     i.kill()
                 level += 1
                 hero, enemy_group, max_x, max_y = generate_level(levels[str(level)])
+
             for b in beer_group:
-                if sprite.spritecollide(hero, beer_group, True):
+                if sprite.collide_rect(hero, b):
                     extra_speed = 5
+                    start = pygame.time.get_ticks()
                     b.kill()
             hits = sprite.spritecollide(hero, enemy_group, False)
             if hits:
                 process = False
+
+            if extra_speed > 0:
+                if pygame.time.get_ticks() - start > 5000:
+                    extra_speed = 0
 
             hero.update(left, right, up, tiles_group, screen, extra_speed)
 

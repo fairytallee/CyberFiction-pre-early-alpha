@@ -215,25 +215,19 @@ class Player(sprite.Sprite):
 
         # hp_line = pygame.Rect(WIN_WIDTH // 2 - hp_width // 2, hp_y, hp_width, hp_height)
         # pygame.draw.rect(screen, cur_color, hp_line, 1, 0, 0, 0, 0, 0)
+        f = False
 
         if left:
-            start = pygame.time.Clock()
-            if pygame.time.get_ticks() - start.get_time() < 5000:
-                self.xvel = -HERO_MOVE_SPEED - extra_speed  # Лево = x- n
-            else:
-                self.xvel = -HERO_MOVE_SPEED
+            self.xvel = -HERO_MOVE_SPEED - extra_speed  # Лево = x- n
             self.image.fill('#888888')
+
             if up:  # для прыжка влево есть отдельная анимация
                 self.boltAnimJumpLeft.blit(self.image, (0, 0))
             else:
                 self.boltAnimLeft.blit(self.image, (0, 0))
 
         if right:
-            start = pygame.time.Clock()
-            if pygame.time.get_ticks() - start.get_time() < 5000:
-                self.xvel = HERO_MOVE_SPEED + extra_speed  # Лево = x- n
-            else:
-                self.xvel = HERO_MOVE_SPEED
+            self.xvel = HERO_MOVE_SPEED + extra_speed  # Лево = x- n
             self.image.fill('#888888')
             if up:
                 self.boltAnimJumpRight.blit(self.image, (0, 0))
