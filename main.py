@@ -172,7 +172,7 @@ extra_speed = 0
 count = 0
 
 tile_images = {
-    'wall': load_image('textures/metal_durt_left.jpg'),
+    'wall': load_image('textures/street/metal/metal_durt_left.jpg'),
     'portal': load_image('textures/portal.png'),
     'beer': load_image('textures/beer.png')
 }
