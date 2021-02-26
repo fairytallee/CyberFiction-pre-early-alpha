@@ -1,7 +1,6 @@
 import pygame
 from pygame import *
 import math
-from Animations import AnimatedSprite
 import pyautogui
 import os
 import pyganim
