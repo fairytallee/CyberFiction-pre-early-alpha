@@ -254,7 +254,7 @@ class Player(sprite.Sprite):
         self.collide(self.xvel, 0, platforms)
 
         if self.heals_points <= 0:
-            pass
+            pygame.quit()
             # return False
 
     def collide(self, xvel, yvel, platforms):
