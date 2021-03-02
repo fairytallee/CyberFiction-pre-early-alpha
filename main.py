@@ -173,14 +173,14 @@ extra_speed = 0
 count = 0
 
 tile_images = {
-    'wall': load_image('textures/street/metal/metal_durt_left.jpg'),
-    'portal': load_image('textures/portal.png'),
-    'beer': load_image('textures/beer.png')
+    'wall': load_image('textures/main/walls/metal3.png'),
+    'portal': load_image('textures/objects/portal.png'),
+    'beer': load_image('textures/objects/beer.png')
 }
 
 levels = {
     '1': load_level('map.map'),
-    '2': load_level('second.map')
+    '2': load_level('map2.map')
 }
 bg_menu = load_image('main_menu/scr_for_menu.jpg')
 
